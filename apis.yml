@@ -1,96 +1,39 @@
+aid: bancontact
 name: Bancontact
-description: Bancontact is Belgium's most popular electronic payment system for debit cards, offering payment processing and integration APIs for merchants and service providers.
-image: https://www.bancontact.com/assets/images/logo-bancontact.svg
-url: https://www.bancontact.com
-created: '2025'
-modified: '2025'
+description: >-
+  Bancontact is Belgium's most popular electronic payment system for debit
+  cards, offering payment processing and integration solutions for merchants
+  and service providers across Belgium and internationally.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-- payments
-- banking
-- fintech
-- e-commerce
-- belgium
-- debit cards
+  - Payments
+  - Banking
+  - Fintech
+  - E-Commerce
+  - Belgium
+  - Debit Cards
+url: https://raw.githubusercontent.com/api-evangelist/bancontact/refs/heads/main/apis.yml
+created: '2025-01-01'
+modified: '2026-03-16'
+specificationVersion: '0.19'
 apis:
-- name: Bancontact Payment API
-  description: Core API for processing Bancontact payments, enabling merchants to accept payments through the Bancontact network
-  image: https://www.bancontact.com/assets/images/api-icon.png
-  humanURL: https://www.bancontact.com/en/developers
-  baseURL: https://api.bancontact.com/v1
-  tags:
-  - payments
-  - transactions
-  - checkout
-  properties:
-  - type: Documentation
-    url: https://www.bancontact.com/en/developers/documentation
-  - type: OpenAPI
-    url: https://api.bancontact.com/v1/openapi.json
-  - type: Authentication
-    url: https://www.bancontact.com/en/developers/authentication
-  - type: Sandbox
-    url: https://sandbox.bancontact.com
-  contact:
-  - FN: Bancontact API Support
-    email: api-support@bancontact.com
-    url: https://www.bancontact.com/en/support
-- name: Bancontact QR Code API
-  description: API for generating and processing QR code-based Bancontact payments
-  humanURL: https://www.bancontact.com/en/developers/qr
-  baseURL: https://api.bancontact.com/v1/qr
-  tags:
-  - qr-code
-  - mobile-payments
-  - point-of-sale
-  properties:
-  - type: Documentation
-    url: https://www.bancontact.com/en/developers/qr-documentation
-  - type: Code Examples
-    url: https://github.com/bancontact/qr-examples
-- name: Bancontact Refund API
-  description: API for processing refunds and cancellations for Bancontact transactions
-  humanURL: https://www.bancontact.com/en/developers/refunds
-  baseURL: https://api.bancontact.com/v1/refunds
-  tags:
-  - refunds
-  - returns
-  - cancellations
-  properties:
-  - type: Documentation
-    url: https://www.bancontact.com/en/developers/refund-documentation
-- name: Bancontact Webhooks API
-  description: Webhook notifications for payment status updates and events
-  humanURL: https://www.bancontact.com/en/developers/webhooks
-  baseURL: https://api.bancontact.com/v1/webhooks
-  tags:
-  - webhooks
-  - notifications
-  - events
-  properties:
-  - type: Documentation
-    url: https://www.bancontact.com/en/developers/webhook-documentation
+  - aid: bancontact:bancontact-payment-api
+    name: Bancontact Payment API
+    description: >-
+      Core API for processing Bancontact payments, enabling merchants to accept
+      payments through the Bancontact network.
+    humanURL: https://www.bancontact.com/
+    tags:
+      - Payments
+      - Transactions
+      - Checkout
+    properties:
+      - type: Documentation
+        url: https://www.bancontact.com/
 common:
-- type: Portal
-  url: https://developer.bancontact.com
-- type: Getting Started
-  url: https://www.bancontact.com/en/developers/getting-started
-- type: Authentication
-  url: https://www.bancontact.com/en/developers/authentication
-- type: Status Page
-  url: https://status.bancontact.com
-- type: Terms of Service
-  url: https://www.bancontact.com/en/terms
-- type: Privacy Policy
-  url: https://www.bancontact.com/en/privacy
-- type: GitHub Organization
-  url: https://github.com/bancontact
-- type: Contact
-  url: https://www.bancontact.com/en/contact
-- type: Blog
-  url: https://www.bancontact.com/en/blog
-- type: Pricing
-  url: https://www.bancontact.com/en/pricing
+  - type: Website
+    url: https://www.bancontact.com/
 maintainers:
-- FN: Bancontact Developer Relations
-  email: developers@bancontact.com
-  url: https://www.bancontact.com/en/developers
+  - FN: Kin Lane
+    email: kin@apievangelist.com
