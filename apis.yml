@@ -7,12 +7,12 @@ description: >-
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Payments
   - Banking
-  - Fintech
-  - E-Commerce
   - Belgium
   - Debit Cards
+  - E-Commerce
+  - Fintech
+  - Payments
 url: https://raw.githubusercontent.com/api-evangelist/bancontact/refs/heads/main/apis.yml
 created: '2025-01-01'
 modified: '2026-03-16'
@@ -25,9 +25,9 @@ apis:
       payments through the Bancontact network.
     humanURL: https://www.bancontact.com/
     tags:
+      - Checkout
       - Payments
       - Transactions
-      - Checkout
     properties:
       - type: Documentation
         url: https://www.bancontact.com/
