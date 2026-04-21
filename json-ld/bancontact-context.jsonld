@@ -1,0 +1,84 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "https://schema.org/",
+    "bancontact": "https://www.bancontact.com/vocab/",
+
+    "Payment": {
+      "@id": "bancontact:Payment",
+      "@type": "@id"
+    },
+    "paymentId": {
+      "@id": "bancontact:paymentId",
+      "@type": "xsd:string"
+    },
+    "amount": {
+      "@id": "bancontact:amount",
+      "@type": "xsd:decimal"
+    },
+    "currency": {
+      "@id": "bancontact:currency",
+      "@type": "xsd:string"
+    },
+    "status": {
+      "@id": "bancontact:status",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "bancontact:description",
+      "@type": "xsd:string"
+    },
+    "createdAt": {
+      "@id": "bancontact:createdAt",
+      "@type": "xsd:dateTime"
+    },
+    "expiresAt": {
+      "@id": "bancontact:expiresAt",
+      "@type": "xsd:dateTime"
+    },
+
+    "QRCode": {
+      "@id": "bancontact:QRCode",
+      "@type": "@id"
+    },
+    "qrContent": {
+      "@id": "bancontact:qrContent",
+      "@type": "xsd:string"
+    },
+    "deeplink": {
+      "@id": "bancontact:deeplink",
+      "@type": "xsd:anyURI"
+    },
+
+    "Merchant": {
+      "@id": "bancontact:Merchant",
+      "@type": "@id"
+    },
+    "merchantId": {
+      "@id": "bancontact:merchantId",
+      "@type": "xsd:string"
+    },
+    "merchantName": {
+      "@id": "bancontact:merchantName",
+      "@type": "xsd:string"
+    },
+
+    "Refund": {
+      "@id": "bancontact:Refund",
+      "@type": "@id"
+    },
+    "refundId": {
+      "@id": "bancontact:refundId",
+      "@type": "xsd:string"
+    },
+    "refundAmount": {
+      "@id": "bancontact:refundAmount",
+      "@type": "xsd:decimal"
+    },
+    "originalPaymentId": {
+      "@id": "bancontact:originalPaymentId",
+      "@type": "xsd:string"
+    }
+  }
+}

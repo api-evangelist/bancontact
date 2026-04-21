@@ -1,0 +1,42 @@
+name: Bancontact Payment Capability
+description: >-
+  Naftiko capability for Bancontact Pro payment acceptance covering online checkout,
+  QR code payments, mobile app payments, and refund processing for Belgian merchants.
+version: '1.0'
+provider: bancontact
+
+workflows:
+  - name: Online Checkout Payment
+    description: REST API flow for Bancontact payment acceptance in e-commerce checkout.
+    apis:
+      - bancontact:payconiq-acceptance-api
+    tools:
+      - name: CreatePayment
+        description: Create a Bancontact payment transaction.
+      - name: GetPaymentStatus
+        description: Retrieve current status of a Bancontact payment.
+      - name: CancelPayment
+        description: Cancel a pending payment transaction.
+    persona: Merchant Developer
+
+  - name: QR Code Payment
+    description: Generate and display a Bancontact QR code for in-store or invoice payment.
+    apis:
+      - bancontact:payconiq-acceptance-api
+    tools:
+      - name: GenerateQRCode
+        description: Generate a QR code for Bancontact payment checkout.
+      - name: GetPaymentStatus
+        description: Poll or receive callback for QR code scan and payment completion.
+    persona: Merchant Developer
+
+  - name: Refund Processing
+    description: Process refunds for completed Bancontact payments.
+    apis:
+      - bancontact:payconiq-acceptance-api
+    tools:
+      - name: CreateRefund
+        description: Initiate a full or partial refund for a completed Bancontact payment.
+      - name: GetRefundStatus
+        description: Retrieve the status of a submitted refund.
+    persona: Merchant Developer

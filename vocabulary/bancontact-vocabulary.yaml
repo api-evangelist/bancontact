@@ -1,0 +1,52 @@
+vocabulary:
+  name: Bancontact Vocabulary
+  description: Unified taxonomy for Bancontact Pro payment services covering online checkout, QR code payments, and mobile payments in Belgium.
+  version: '1.0'
+  provider: bancontact
+
+resources:
+  - name: Payment
+    description: A Bancontact payment transaction initiated by a merchant or consumer.
+    aliases: [transaction, order]
+  - name: QRCode
+    description: A QR code generated for Bancontact payment acceptance.
+    aliases: [qr, code]
+  - name: Merchant
+    description: A business accepting Bancontact payments via the API.
+    aliases: [vendor, store]
+  - name: Refund
+    description: A refund issued against a completed Bancontact payment.
+    aliases: [reversal, credit]
+  - name: Webhook
+    description: A callback notification sent to the merchant for payment status changes.
+    aliases: [callback, notification]
+
+actions:
+  - name: create
+    description: Create a new Bancontact payment transaction.
+  - name: confirm
+    description: Confirm a payment via the Payconiq app.
+  - name: cancel
+    description: Cancel a pending Bancontact payment.
+  - name: refund
+    description: Issue a refund for a completed payment.
+  - name: query
+    description: Retrieve payment status or transaction details.
+  - name: generate
+    description: Generate a QR code for payment checkout.
+
+workflows:
+  - name: Online Checkout
+    description: REST API flow for merchant-initiated Bancontact e-commerce payment.
+  - name: QR Code Payment
+    description: Generate and display a QR code for customer scan and pay.
+  - name: Refund Processing
+    description: API-initiated refund workflow for completed transactions.
+
+personas:
+  - name: Belgian Consumer
+    description: End user paying via Payconiq by Bancontact mobile app.
+  - name: Merchant Developer
+    description: Developer integrating Bancontact payments into an e-commerce or POS system.
+  - name: PSP Developer
+    description: Payment service provider embedding Bancontact into a multi-method gateway.

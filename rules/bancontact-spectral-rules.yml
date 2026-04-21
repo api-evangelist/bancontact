@@ -1,0 +1,108 @@
+rules:
+  bancontact-info-title-required:
+    description: API title must be present.
+    message: "API info must include a title."
+    severity: error
+    given: "$.info"
+    then:
+      field: title
+      function: truthy
+
+  bancontact-info-description-required:
+    description: API description must be present.
+    message: "API info must include a description."
+    severity: warn
+    given: "$.info"
+    then:
+      field: description
+      function: truthy
+
+  bancontact-info-version-required:
+    description: API version must be present.
+    message: "API info must include a version."
+    severity: error
+    given: "$.info"
+    then:
+      field: version
+      function: truthy
+
+  bancontact-operation-id-required:
+    description: All operations must have an operationId.
+    message: "Operation must have an operationId."
+    severity: error
+    given: "$.paths[*][get,post,put,patch,delete]"
+    then:
+      field: operationId
+      function: truthy
+
+  bancontact-operation-summary-required:
+    description: All operations must have a summary.
+    message: "Operation must have a summary."
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete]"
+    then:
+      field: summary
+      function: truthy
+
+  bancontact-payment-status-field:
+    description: Payment response schemas must include a status field.
+    message: "Payment schemas should include a status field."
+    severity: warn
+    given: "$.components.schemas.Payment.properties"
+    then:
+      field: status
+      function: truthy
+
+  bancontact-payment-amount-required:
+    description: Payment request schemas must include amount.
+    message: "Payment request schemas should include an amount field."
+    severity: error
+    given: "$.components.schemas.PaymentRequest.properties"
+    then:
+      field: amount
+      function: truthy
+
+  bancontact-security-required:
+    description: All Bancontact APIs must define security schemes.
+    message: "API must define security requirements."
+    severity: error
+    given: "$"
+    then:
+      field: security
+      function: truthy
+
+  bancontact-webhook-callback:
+    description: Payment operations should document webhook callbacks.
+    message: "POST payment operations should document callback webhooks."
+    severity: info
+    given: "$.paths[*].post"
+    then:
+      field: callbacks
+      function: truthy
+
+  bancontact-response-201-for-post:
+    description: POST operations should return 201 on resource creation.
+    message: "POST operations creating resources should return 201."
+    severity: warn
+    given: "$.paths[*].post.responses"
+    then:
+      field: "201"
+      function: truthy
+
+  bancontact-error-response-schema:
+    description: Error responses must include a schema.
+    message: "4xx responses should include an error schema."
+    severity: warn
+    given: "$.paths[*][*].responses[4XX].content[*]"
+    then:
+      field: schema
+      function: truthy
+
+  bancontact-schema-description-required:
+    description: All named schemas must have a description.
+    message: "Schema components must have a description."
+    severity: warn
+    given: "$.components.schemas[*]"
+    then:
+      field: description
+      function: truthy
