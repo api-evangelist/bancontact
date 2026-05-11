@@ -100,6 +100,31 @@ common:
         description: Accept Bancontact via Mollie payment service.
       - name: MultiSafepay
         description: Accept Bancontact via MultiSafepay payment gateway.
+  - type: Integrations
+    url: https://www.bancontact.com/partners
+integrations:
+  - name: Bancontact
+  - name: Adyen
+  - name: EMS
+  - name: Keyware
+  - name: Loyaltek
+  - name: myPOS
+  - name: SIX
+  - name: Paybox by Verifone
+  - name: Acquiris
+  - name: iCard
+  - name: G+D Mobile Security
+  - name: Gemalto
+  - name: life.augmented
+  - name: europabank
+  - name: fime
+  - name: riscure
+  - name: Trusted Labs
+  - name: Modirum
+  - name: Argenta
+  - name: Banque VanBreda
+  - name: Belfius
+  - name: Beobank
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
