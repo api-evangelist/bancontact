@@ -53,7 +53,7 @@ common:
     url: vocabulary/bancontact-vocabulary.yaml
   - type: NaftikoCapability
     url: capabilities/bancontact-payment-capability.yaml
-  - type: JSON-LD
+  - type: JSONLD
     url: json-ld/bancontact-context.jsonld
   - name: Features
     type: Features
