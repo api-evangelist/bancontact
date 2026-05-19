@@ -41,6 +41,8 @@ apis:
         url: https://docs.payconiq.be/
         name: Legacy Payconiq Documentation
 common:
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/bancontactpayconiqcompany
   - type: Website
     url: https://www.bancontact.com/
     name: Bancontact
