@@ -104,6 +104,8 @@ common:
         description: Accept Bancontact via MultiSafepay payment gateway.
   - type: Integrations
     url: https://www.bancontact.com/partners
+  - type: LLMsTxt
+    url: https://docs.bancontactpro.com/llms.txt
 integrations:
   - name: Bancontact
   - name: Adyen
