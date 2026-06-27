@@ -53,7 +53,7 @@ common:
     url: rules/bancontact-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/bancontact-vocabulary.yaml
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/bancontact-payment-capability.yaml
   - type: JSONLD
     url: json-ld/bancontact-context.jsonld
@@ -104,7 +104,7 @@ common:
         description: Accept Bancontact via MultiSafepay payment gateway.
   - type: Integrations
     url: https://www.bancontact.com/partners
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://docs.bancontactpro.com/llms.txt
 integrations:
   - name: Bancontact
