@@ -67,8 +67,6 @@ common:
     url: rules/bancontact-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/bancontact-vocabulary.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/bancontact-payment-capability.yaml
   - type: JSONLD
     url: json-ld/bancontact-context.jsonld
   - name: Features
