@@ -1,0 +1,24 @@
+# Bancontact Pro Developer Portal
+
+> Discover the API documentation to start developing your Bancontact Pro application
+
+## Table of contents
+
+ - [API Errors, Statuses, and Responses](https://docs.bancontactpro.com/guides/general/errorsandstatuses052025.md)
+ - [Getting Started](https://docs.bancontactpro.com/guides/general/gettingstarted052025v4.md)
+ - [Payment link update](https://docs.bancontactpro.com/guides/general/payloadurlupdate.md)
+ - [Payouts, Bulking & Remittance Information](https://docs.bancontactpro.com/guides/general/payoutremittance052025.md)
+ - [FAQs](https://docs.bancontactpro.com/guides/general/faq.md)
+ - [One-Way TLS Encryption Support](https://docs.bancontactpro.com/guides/general/callback052025.md)
+ - [Refunds](https://docs.bancontactpro.com/guides/general/refunds052025.md)
+ - [Reconciliation Guide](https://docs.bancontactpro.com/guides/general/reconciliation052025.md)
+ - [On a display](https://docs.bancontactpro.com/guides/instore/ondisplay052025v4.md)
+ - [On a Receipt](https://docs.bancontactpro.com/guides/instore/receipt052025v4.md)
+ - [Static QR Code](https://docs.bancontactpro.com/guides/instore/staticqr052025v4.md)
+ - [Invoice](https://docs.bancontactpro.com/guides/invoice/invoice052025v4.md)
+ - [Online Sales](https://docs.bancontactpro.com/guides/online/onlinesales.md)
+ - [Top Up](https://docs.bancontactpro.com/guides/online/topup052025v4.md)
+ - [Payment V3 API](https://docs.bancontactpro.com/apis/merchant-payment.openapi.md)
+ - [Merchant Reconciliation API](https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi.md)
+ - [Payment Refund Service API](https://docs.bancontactpro.com/apis/refund-public.openapi.md)
+
