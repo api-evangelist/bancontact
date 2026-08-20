@@ -44,6 +44,12 @@ apis:
       - Checkout
       - Payments
       - QR Code
+      - Transaction
+      - Refunds
+    tags_raw:
+      - Checkout
+      - Payments
+      - QR Code
       - Transactions
       - Refunds
     properties:
