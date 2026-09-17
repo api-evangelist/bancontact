@@ -1,0 +1,69 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  https://docs.bancontactpro.com/guides/general/callback052025 (Merchant Callback guide) and the
+  `callback` operation (POST /callback, tag "Callback to Merchants") with its MerchantCallback
+  schema in openapi/bancontact-payment-v3-api-openapi.yml. Bancontact publishes no AsyncAPI
+  document (probed docs.bancontactpro.com/asyncapi.yaml → 404 SPA shell); this is the webhook
+  catalog captured from the docs + OpenAPI, not a generated AsyncAPI.
+description: >-
+  Bancontact Pro notifies the merchant of every payment status change with a JWS-signed HTTP
+  POST to the merchant's HTTPS callback URL (registered per product, or passed as callbackUrl
+  when creating a payment). There is one event type — a payment status notification — whose
+  body is the MerchantCallback object. Delivery is asynchronous, unordered and retried for up to
+  24 hours until the merchant answers 200.
+transport: https-post
+direction: provider -> merchant
+registration:
+  - per product profile (callbackUrl / identifyCallbackUrl on the creditor profile, set during onboarding; mandatory at product creation for Top Up)
+  - per payment (callbackUrl and identifyCallbackUrl on payment_create_request override the profile)
+security:
+  signature_header: signature
+  scheme: detached JWS (RFC 7797), alg ES256, JOSE header typ jose+json with kid and crit claims https://payconiq.com/sub, /iss, /iat, /jti, /path
+  verify_against: https://jwks.bancontact.net/ (PROD) or https://jwks.preprod.bancontact.net/ (PREPROD); cache JWKS <= 12 h, re-fetch on kid miss
+  transport: one-way TLS 1.2 — Bancontact validates the merchant's server certificate; no client cert exchange
+  user_agent: Bancontact Payments/v3
+delivery:
+  ordering: not guaranteed
+  timeout: 15 seconds without a response counts as a failure (5 seconds in sync-callback mode)
+  retry_window: up to 24 hours until HTTP 200
+  retry_triggers: [no response within 15 s, 429, 500, 503, 504, 509]
+  sync_mode: >-
+    If sync callback is configured on the merchant profile, Bancontact waits for the callback
+    response: 200 accepts the payment, any 4xx/5xx or a 5 s timeout rejects it; after 3 failed
+    attempts the payment is marked FAILED.
+  idempotency: the callback content (headers, body, URL) is identical on every retry — deduplicate on paymentId + status
+  fallback: if signature validation keeps failing, GET /v3/payments/{id} for the authoritative status
+events:
+  - name: payment.status
+    operation: callback
+    method: POST
+    path: '{merchant callbackUrl}'
+    content_type: application/json
+    schema: '#/components/schemas/merchant-callback (openapi/bancontact-payment-v3-api-openapi.yml)'
+    payload_fields:
+      paymentId: 24-char Bancontact payment id
+      amount: integer cents
+      currency: EUR
+      description: payment description (SEPA extended character set)
+      reference: merchant reference
+      createdAt: date-time
+      expireAt: date-time
+      succeededAt: date-time (when SUCCEEDED)
+      status: PENDING | IDENTIFIED | AUTHORIZED | AUTHORIZATION_FAILED | FAILED | SUCCEEDED | CANCELLED | EXPIRED | PENDING_MERCHANT_ACKNOWLEDGEMENT | VOIDED
+      debtor: {iban: masked IBAN, name: first name}
+    statuses_final: [SUCCEEDED, AUTHORIZATION_FAILED, FAILED, CANCELLED, EXPIRED, VOIDED]
+    follow_up: when status is PENDING_MERCHANT_ACKNOWLEDGEMENT (VOID active) the merchant must POST /v3/payments/{id}/acknowledge (merchant-acknowledge)
+  - name: payment.identified
+    operation: callback
+    method: POST
+    path: '{identifyCallbackUrl}'
+    content_type: application/json
+    note: >-
+      Same MerchantCallback body delivered to the separate identifyCallbackUrl when the consumer
+      scans the QR (status IDENTIFIED); declared on payment_create_request.identifyCallbackUrl.
+event_count: 2
+asyncapi_published: false
+related:
+  conventions: conventions/bancontact-conventions.yml
+  authentication: authentication/bancontact-authentication.yml

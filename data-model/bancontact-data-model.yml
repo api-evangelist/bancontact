@@ -1,0 +1,47 @@
+generated: '2026-09-17'
+method: derived
+source: >-
+  Derived from the component schemas and id-reference fields of the three first-party OpenAPI
+  bundles (openapi/*.yml): get_payment_response / payment_creditor_response / merchant-callback
+  (Payment V3), RefundModel (Refund Service), PayoutListItem / TransactionDetails
+  (Reconciliation), and the payout/bulking rules in
+  https://docs.bancontactpro.com/guides/general/payoutremittance052025.
+docs: https://docs.bancontactpro.com/
+notation: relationships use has_one / has_many / belongs_to with the reference field; direction is from the entity that owns the reference.
+entities:
+  - {name: Merchant, id_field: merchantId, id_format: 24 hex chars, domain: onboarding, description: The contracted merchant (Company ID in the portal).}
+  - {name: ProductProfile, id_field: profileId / paymentProfileId (PPID), id_format: 24 chars, domain: onboarding, description: One product/integration (display, receipt, static QR, top-up, online) with its own API key, callback URLs, payout IBAN and closing time.}
+  - {name: Payment, id_field: paymentId, id_format: 24 chars, domain: payments, description: A consumer payment request with lifecycle status, amount in cents, EUR, merchant reference, bulkId and hypermedia _links.}
+  - {name: Debtor, id_field: null, domain: payments, description: The paying consumer — masked IBAN and first name on the payment/callback; full refund IBAN via GET /v3/payments/<id>/debtor/refundIban.}
+  - {name: Refund, id_field: refundId, id_format: 24 chars, domain: refunds, description: A full or partial reversal of a SUCCEEDED payment; status per RefundStatus.}
+  - {name: Payout, id_field: payoutId, domain: reconciliation, description: A SEPA credit transfer to the merchant's payout IBAN — bulked (per profile IBAN, closing time and optional bulkId) or individual.}
+  - {name: PointOfSale, id_field: posId, domain: payments, description: A static-QR cash register; one active payment per profileId+posId.}
+  - {name: Shop, id_field: shopId, domain: payments, description: Optional shop grouping on payments.}
+  - {name: Voucher, id_field: null, domain: payments, description: Meal/eco/gift/consumption voucher eligibility (VoucherProvider e.g. BEL_MONIZZE, VoucherScheme e.g. BEL_MEAL_VOUCHER) attached to a payment.}
+relationships:
+  - {from: Merchant, to: ProductProfile, kind: has_many, via: merchantId}
+  - {from: ProductProfile, to: Payment, kind: has_many, via: profileId}
+  - {from: Payment, to: ProductProfile, kind: belongs_to, via: creditor.profileId}
+  - {from: Payment, to: Merchant, kind: belongs_to, via: creditor.merchantId}
+  - {from: Payment, to: Debtor, kind: has_one, via: debtor}
+  - {from: Payment, to: Refund, kind: has_many, via: paymentId}
+  - {from: Refund, to: Payment, kind: belongs_to, via: paymentId}
+  - {from: Payment, to: PointOfSale, kind: belongs_to, via: posId}
+  - {from: Payment, to: Shop, kind: belongs_to, via: shopId}
+  - {from: Payment, to: Voucher, kind: has_many, via: voucherEligibility}
+  - {from: Payout, to: Payment, kind: has_many, via: 'payoutId (TransactionDetails.payoutId)'}
+  - {from: Payout, to: Refund, kind: has_many, via: payoutId}
+  - {from: Payout, to: Merchant, kind: belongs_to, via: merchantId}
+  - {from: Payout, to: ProductProfile, kind: belongs_to, via: 'iban + bulkId (bulking key)'}
+enums:
+  PaymentStatus: [PENDING, IDENTIFIED, AUTHORIZED, AUTHORIZATION_FAILED, FAILED, SUCCEEDED, CANCELLED, EXPIRED, PENDING_MERCHANT_ACKNOWLEDGEMENT, VOIDED]
+  PaymentType: [P2P, DIRECT_PAY, DYNAMIC, STATIC, TEMPLATE, UNKNOWN, SCAN_PAY, PAYMENT_REQUEST]
+  PaymentStage: [AUTHORIZE, CAPTURE, COMPLETED, IDENTIFY, ACCEPT, NOTIFY, INITIALIZED, SOLVENCY, CANCEL, CREATE, CONFIRM, RISK_ACTIONS]
+  Currency: [EUR]
+  RefundStatus: [PENDING, REFUNDED, FAILED]
+  PayoutStatus: [SUCCEEDED, FAILED]
+  PaymentChannel: [ONLINE, INSTORE, INVOICE]
+identifiers:
+  paymentId: 24 characters, also the remittance Payment ID on individual payouts
+  bulkPayoutId: '24 hex chars, embedded in bulked-payout remittance YYYYMMDD-{bulkPayoutId}-{bulkId|NONE}-PQ-BulkRecon-{merchantId}'
+  endToEndId: on successful payments; matches the End-to-end reference on the merchant's CAMT bank statement

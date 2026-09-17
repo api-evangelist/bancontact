@@ -1,0 +1,68 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  Searched npm, PyPI, Packagist, NuGet, Maven Central and GitHub (orgs bancontact,
+  bancontactpro, payconiq, bancontact-payconiq) on 2026-09-17, plus every page of
+  docs.bancontactpro.com. Bancontact Company publishes NO first-party client library
+  for the Bancontact Pro API: the developer portal links only the three OpenAPI
+  bundles and devsupport@bancontact.com. What exists is community-authored, and the
+  legacy github.com/payconiq org (Payconiq International, now part of EPI/Wero — a
+  different company from Bancontact Company nv/sa) still hosts JWS signing utilities
+  for the predecessor Payconiq V2/V3 merchant API. None of these is marked official.
+official_sdk_count: 0
+packages:
+  - language: javascript
+    registry: npm
+    name: bancontact-pro
+    url: https://www.npmjs.com/package/bancontact-pro
+    install: npm install bancontact-pro
+    official: false
+    version: 0.1.1
+    published: '2026-07-10'
+    repository: https://github.com/koraysels/bancontact-pro
+    note: >-
+      Community package describing itself as an "Unofficial Node.js SDK for the Bancontact Pro
+      (Payconiq) Merchant Payment API v3". Not linked from docs.bancontactpro.com.
+  - language: javascript
+    registry: npm
+    name: payconiq
+    url: https://www.npmjs.com/package/payconiq
+    install: npm install payconiq
+    official: false
+    version: 0.4.2
+    published: '2026-05-03'
+    repository: https://github.com/KantiKuijk/Payconiq
+    note: >-
+      Community "Node.js implementation for interacting with the Payconiq V3 API" — the
+      predecessor name of the Bancontact Pro Payment V3 API. Not linked from the provider docs.
+  - language: java
+    registry: github
+    name: payconiq/java-jws-signature
+    url: https://github.com/payconiq/java-jws-signature
+    install: git clone https://github.com/payconiq/java-jws-signature
+    official: false
+    version: null
+    published: '2022-11-15'
+    note: >-
+      "Java JSON Web Signature Utility" in the legacy github.com/payconiq org (last push
+      2022-11-15). Relevant to the ES256 detached JWS the Bancontact Pro API requires, but
+      published by Payconiq International, not Bancontact Company, and not referenced from
+      docs.bancontactpro.com; no registry release, so version is null.
+  - language: php
+    registry: github
+    name: payconiq/php-jws-signature
+    url: https://github.com/payconiq/php-jws-signature
+    install: git clone https://github.com/payconiq/php-jws-signature
+    official: false
+    version: null
+    published: '2020-08-06'
+    note: >-
+      "PHP JSON Web Signature Utility" in the legacy github.com/payconiq org (last push
+      2020-08-06). Same provenance caveat as the Java utility; no registry release.
+registries_checked:
+  - {registry: npm, query: bancontact / payconiq, result: 2 community packages}
+  - {registry: pypi, query: bancontact / payconiq / bancontact-pro, result: 404}
+  - {registry: packagist, query: bancontact, result: only PSP plugins (Mollie, Pay.nl, Worldline) — none first-party}
+  - {registry: nuget, query: bancontact, result: only third-party PSP SDKs}
+  - {registry: maven, query: bancontact, result: io.primer:bancontact-card (Primer, third party)}
+  - {registry: github, query: orgs bancontact / bancontactpro / bancontact-payconiq, result: 404; payconiq org exists (legacy)}

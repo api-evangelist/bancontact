@@ -1,0 +1,51 @@
+generated: '2026-09-17'
+method: searched
+source: https://docs.bancontactpro.com/guides/general/gettingstarted052025v4
+docs:
+  - https://docs.bancontactpro.com/guides/general/gettingstarted052025v4
+  - https://docs.bancontactpro.com/guides/general/faq
+description: >-
+  Bancontact Pro's test surface is a full pre-production environment (PREPROD) with its own
+  API host, JWKS and a PREPROD build of the consumer Bancontact Pay app. It is provisioned by
+  humans, not self-served: merchants email devsupport@bancontact.com and receive a PPID + API key
+  per integration type, which can take up to 2 weeks. Nothing tested in PREPROD touches the real
+  banking environment. Every value below is copied verbatim from the provider's docs.
+modes:
+  - name: PREPROD
+    base_url: https://merchant.api.preprod.bancontact.net
+    jwks: https://jwks.preprod.bancontact.net/
+    self_service: false
+    request_via: devsupport@bancontact.com (company name, Merchant ID, point of contact, integration type)
+    provisioning_time: up to 2 weeks
+    integration_types: [On a Display, On a Receipt, Static QR, Top Up]
+    notes: Multiple test merchants can be issued for separate dev/test/QA environments; the same email cannot be reused across merchant accounts.
+  - name: PROD
+    base_url: https://merchant.api.bancontact.net
+    jwks: https://jwks.bancontact.net/
+    self_service: false
+    request_via: Bancontact Pro portal (Settings → API Key and Company ID), Support Team or Account Manager
+    notes: All transactions are debited from the payer's real account; Bancontact recommends a PREPROD sign-off first.
+key_formats:
+  api_key: opaque; one per product; no documented test/live prefix — environment is selected by host, not key shape
+  ppid: Product Profile Identifier, one per product
+test_app:
+  name: Bancontact Pay (PREPROD / EXT build)
+  download: https://tally.so/r/nP8P1Q
+  support: testappsupport@bancontact.com
+  onboarding_otp: '123456'   # both the email and SMS verification codes in the PREPROD app; no code is actually sent
+  constraints:
+    - Uninstall the PROD app before installing the PREPROD build (multiple versions cause redirection issues)
+    - Phone number must be an EU number; select "I don't have itsme"
+    - Reset the app from the profile before re-onboarding with a new email or phone
+test_cards:
+  - {issuer: KBC, number: '5127 8829 9999 9715', expiry: '11/29', result: Always Authorized}
+  - {issuer: KBC, number: '5127 8829 9999 9723', expiry: '11/29', result: Insufficient funds}
+  - {issuer: KBC, number: '5127 8829 9999 9731', expiry: '11/29', result: Card Refused by Issuer}
+test_bank_accounts:
+  iban: any randomly generated IBAN is accepted in PREPROD — the docs recommend http://randomiban.com
+time_simulation: none — no test clocks; payment ids expire naturally (20 min online, 2 min in-store)
+fixtures_and_triggers: none — status transitions are driven by paying with the PREPROD app and the test cards above
+callbacks_in_sandbox: callbacks fire from PREPROD to the merchant's HTTPS callback URL and are JWS-signed with the PREPROD JWKS
+url_note: >-
+  PREPROD currently emits pay.acc.bancontact.net payment URLs rather than pay.preprod.bancontact.net
+  (guides/general/payloadurlupdate).

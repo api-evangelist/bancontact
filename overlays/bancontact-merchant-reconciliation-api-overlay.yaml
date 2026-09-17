@@ -1,0 +1,35 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist overlay for Bancontact Pro Merchant Reconciliation API
+  version: 1.0.0
+extends: openapi/_original/merchant-reconciliation.openapi.yaml
+x-generated: '2026-09-17'
+x-method: generated
+x-source: https://docs.bancontactpro.com/_bundle/apis/merchant-reconciliation.openapi.yaml
+x-rationale: 'Non-destructive enhancements to the first-party Merchant Reconciliation API bundle: provider contact/support
+  metadata the bundle omits, externalDocs pointing at the guide pages, and API-Evangelist provenance extensions.
+  Apply with any Overlay 1.0.0 processor; the original is never mutated.'
+actions:
+- target: $.info
+  description: Add provider contact + terms the bundle omits (from docs.bancontactpro.com footer and Getting Started).
+  update:
+    contact:
+      name: Bancontact Company nv/sa — Dev Support
+      email: devsupport@bancontact.com
+      url: https://docs.bancontactpro.com/
+    termsOfService: https://www.bancontact.com/en/privacy-statement-and-terms-conditions
+    x-apievangelist:
+      provider: bancontact
+      harvested: '2026-09-17'
+      method: searched
+      artifacts:
+        authentication: authentication/bancontact-authentication.yml
+        conventions: conventions/bancontact-conventions.yml
+        errors: errors/bancontact-problem-types.yml
+        sandbox: sandbox/bancontact-sandbox.yml
+- target: $
+  description: Link the developer portal as externalDocs.
+  update:
+    externalDocs:
+      description: Bancontact Pro Developer Portal
+      url: https://docs.bancontactpro.com/

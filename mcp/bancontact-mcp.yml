@@ -1,0 +1,83 @@
+generated: '2026-09-17'
+method: derived
+status: candidate
+source: >-
+  Searched docs.bancontactpro.com (llms.txt, every guide, app-data.json), www.bancontact.com,
+  GitHub and npm on 2026-09-17 for an official Bancontact MCP server: none exists. The Redocly
+  docs platform advertises an OAuth authorization server for a docs-MCP feature at
+  docs.bancontactpro.com/.well-known/oauth-authorization-server, but POST tools/list to
+  /_mcp and /_mcp/ (and /mcp) returns 404 HTML, so no live MCP surface is reachable. The tool
+  list below is DERIVED from the three first-party OpenAPI contracts; nobody ships it.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: derived
+  note: >-
+    Candidate only. A merchant-side server would need the per-product API key
+    (Authorization header) and an ES256 detached JWS signer against the merchant's registered
+    JWK; the refund tools additionally require Bancontact support to activate createRefund.
+probes:
+  - {url: https://docs.bancontactpro.com/_mcp, method: POST tools/list, status: 404, content_type: text/html}
+  - {url: https://docs.bancontactpro.com/_mcp/, method: POST tools/list, status: 301}
+  - {url: https://docs.bancontactpro.com/mcp, method: POST tools/list, status: 404, content_type: text/html}
+  - {url: https://docs.bancontactpro.com/.well-known/oauth-protected-resource, status: 404}
+server:
+  name: bancontact-pro
+  transport: none
+  openapi:
+    - openapi/bancontact-payment-v3-api-openapi.yml
+    - openapi/bancontact-payment-refund-service-api-openapi.yml
+    - openapi/bancontact-merchant-reconciliation-api-openapi.yml
+tool_count: 12
+tools:
+  - name: create_payment
+    category: payments
+    rest: [create]
+    description: Create a dynamic QR / deeplink / checkout payment for a product profile (POST /v3/payments); returns paymentId and _links.
+  - name: create_static_qr_payment
+    category: payments
+    rest: [create_static_qr_payment]
+    description: Attach a payment to a static QR code for a point of sale (POST /v3/payments/pos); replaces any active payment for the same profileId+posId.
+  - name: get_payment
+    category: payments
+    rest: [merchant-get-payment]
+    description: Fetch a payment by id (GET /v3/payments/{id}) — the fallback when callback signature validation fails.
+  - name: search_payments
+    category: payments
+    rest: [search]
+    description: Search payments by date range, statuses and merchant reference with offset/limit paging (POST /v3/payments/search).
+  - name: cancel_payment
+    category: payments
+    rest: [cancel_payment]
+    description: Cancel a payment still in PENDING or IDENTIFIED (DELETE /v3/payments/{id}).
+  - name: acknowledge_payment
+    category: payments
+    rest: [merchant-acknowledge]
+    description: Acknowledge a PENDING_MERCHANT_ACKNOWLEDGEMENT payment when VOID is active (POST /v3/payments/{id}/acknowledge).
+  - name: get_refund_iban
+    category: refunds
+    rest: [create-refund]
+    description: Return the debtor IBAN of a SUCCEEDED payment for an out-of-band refund (GET /v3/payments/{id}/debtor/refundIban); moves no money.
+  - name: create_refund
+    category: refunds
+    rest: [createRefund]
+    description: Create an idempotent full or partial refund against a SUCCEEDED payment (POST /v3/payments/{payment-id}/refunds, Idempotency-Key required).
+  - name: get_refund
+    category: refunds
+    rest: [getRefundById]
+    description: Get a refund by id (GET /v3/payments/{payment-id}/refunds/{refund-id}).
+  - name: list_payouts
+    category: reconciliation
+    rest: [getPayoutList]
+    description: List payouts credited to the merchant's payout IBAN(s) for a date (GET /v3/reconciliation/payouts).
+  - name: list_reconciled_payments
+    category: reconciliation
+    rest: [getPayments]
+    description: List SUCCEEDED payments by payout id or a 30-day date range (GET /v3/reconciliation/payments).
+  - name: list_reconciled_refunds
+    category: reconciliation
+    rest: [getRefunds]
+    description: List SUCCEEDED refunds by payout id or a 30-day date range (GET /v3/reconciliation/refunds).

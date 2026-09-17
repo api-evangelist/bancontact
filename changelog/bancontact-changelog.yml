@@ -1,0 +1,62 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  The dated "History" sections that Bancontact embeds in info.description of each first-party
+  OpenAPI bundle (https://docs.bancontactpro.com/_bundle/apis/{merchant-payment,refund-public,
+  merchant-reconciliation}.openapi.yaml) plus the dated migration notice at
+  https://docs.bancontactpro.com/guides/general/payloadurlupdate. There is no separate changelog
+  page; the contract IS the changelog.
+docs: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+versioning:
+  scheme: semver per contract, stated in info.version; URL major /v3
+  current:
+    payment-v3-api: 3.6.5
+    payment-refund-service-api: 3.0.3
+    merchant-reconciliation-api: 3.0.1
+  detail: lifecycle/bancontact-lifecycle.yml
+entries:
+  - date: '2026-05-11'
+    contract: platform
+    version: n/a
+    breaking: true
+    highlights:
+      - Production rollout begins of pay.bancontact.net replacing payconiq.com in deeplink, QR-template and checkout URLs (Payconiq brand decommissioned in Belgium); fixed printed QR codes must be re-issued.
+  - date: '2025-10-01'
+    contract: payment-refund-service-api
+    version: 3.0.3
+    breaking: true
+    highlights:
+      - Removed DEV and ACC environments; documented PREPROD and PROD
+      - Added /v3 prefix to operation paths
+  - date: '2025-08-29'
+    contract: payment-v3-api
+    version: 3.6.5
+    breaking: false
+    highlights:
+      - getDebtorIban no longer returns REFUND_NOT_ALLOWED for products with refundAllowed=false
+  - date: '2025-08-26'
+    contract: payment-v3-api
+    version: 3.6.4
+    breaking: false
+    highlights:
+      - Added JWS-Request-Signature-Payment security scheme for all payment calls
+  - date: '2025-08-22'
+    contract: payment-v3-api
+    version: 3.6.3
+    breaking: false
+    highlights:
+      - description and reference now document the SEPA extended character set requirements
+  - date: '2025-07-28'
+    contract: payment-refund-service-api
+    version: 3.0.2
+    breaking: true
+    highlights:
+      - Removed PROCESSING from refund statuses
+      - Removed DEBTOR_IBAN_NOT_AVAILABLE error code from refund creation
+  - date: '2025-07-17'
+    contract: payment-v3-api
+    version: 3.6.2
+    breaking: true
+    highlights:
+      - Removed totalAmount, tippingAmount and transferAmount (no longer in use)
+      - Added examples throughout

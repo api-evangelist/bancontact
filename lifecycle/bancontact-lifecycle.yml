@@ -1,0 +1,70 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  https://docs.bancontactpro.com/guides/general/payloadurlupdate (dated URL migration),
+  https://docs.bancontactpro.com/guides/general/callback052025 (key rotation), the History
+  sections of the three OpenAPI bundles, and probes of status.bancontact.com /
+  status.bancontactpro.com (no DNS) on 2026-09-17.
+versioning:
+  scheme: URL path major version (/v3) + semver in info.version per contract
+  current:
+    payment-v3-api: 3.6.5 (2025-08-29)
+    payment-refund-service-api: 3.0.3 (2025-10-01)
+    merchant-reconciliation-api: 3.0.1
+  header: none — no version header; a new major would be a new path prefix
+  history: changelog/bancontact-changelog.yml
+deprecation_policy:
+  published: true
+  docs: https://docs.bancontactpro.com/guides/general/payloadurlupdate
+  headers: none — Deprecation / Sunset (RFC 8594/9745) headers are not documented
+  mechanism: >-
+    Dated migration notices on the developer portal with a PREPROD-first rollout: changes ship to
+    merchant.api.preprod.bancontact.net for validation before a stated production date.
+  active_deprecations:
+    - id: payconiq-brand-urls
+      title: payconiq.com payment URLs replaced by pay.bancontact.net
+      announced_on_docs: true
+      production_from: '2026-05-11'
+      status: rolling out
+      detail: >-
+        Following the decommissioning of the Payconiq brand in Belgium, _links.deeplink.href moves
+        from https://payconiq.com/pay/2/{txn} to https://pay.bancontact.net/pay/2/{txn}; the QR
+        generator parameter c= follows; static QR / invoice / receipt templates move from
+        https://payconiq.com/t/1/{PPID}?D=&A=&R= to https://pay.bancontact.net/t/1/{PPID}...; the
+        checkout page moves from https://checkout.bancontact.net/ to https://pay.bancontact.net/.
+        Endpoints and API version are unchanged; merchants printing fixed QR codes must re-issue
+        them. PREPROD currently emits pay.acc.bancontact.net URLs.
+    - id: payconiq-docs-host
+      title: docs.payconiq.be retired
+      status: completed
+      detail: https://docs.payconiq.be/ answers 301 to https://docs.bancontactpro.com/ for every path.
+  removed_recently:
+    - {contract: payment-v3-api, version: 3.6.2, date: '2025-07-17', removed: [totalAmount, tippingAmount, transferAmount]}
+    - {contract: payment-refund-service-api, version: 3.0.3, date: '2025-10-01', removed: [DEV and ACC environments]}
+    - {contract: payment-refund-service-api, version: 3.0.2, date: '2025-07-28', removed: [PROCESSING refund status, DEBTOR_IBAN_NOT_AVAILABLE error code]}
+deprecated_operations: []   # no operation in any bundle carries deprecated: true
+key_rotation:
+  docs: https://docs.bancontactpro.com/guides/general/callback052025
+  policy: >-
+    Bancontact may rotate its signing certificate without prior notice; a new JWK is published
+    24 hours before the old one is removed. Merchants must pin only the certificate CN, cache
+    JWKS for at most 12 hours and re-fetch on verification failure.
+status_page:
+  published: false
+  probed:
+    - {url: https://status.bancontact.com/, status: 0, note: no DNS}
+    - {url: https://status.bancontactpro.com/, status: 0, note: no DNS}
+  note: No public status page is linked from the developer portal or bancontact.com.
+sla:
+  published: false
+  note: >-
+    No uptime SLA is published. Operational timings that ARE stated: reconciliation data
+    available D+1 from 09:00 CET; bulked payouts credited the next working day; callback retries
+    for up to 24 hours; PREPROD onboarding up to 2 weeks.
+environments:
+  - {name: PREPROD, base: https://merchant.api.preprod.bancontact.net, jwks: https://jwks.preprod.bancontact.net/}
+  - {name: PROD, base: https://merchant.api.bancontact.net, jwks: https://jwks.bancontact.net/}
+support:
+  developer: devsupport@bancontact.com
+  test_app: testappsupport@bancontact.com
+  merchant: support@bancontact.com / +32 2 793 01 43

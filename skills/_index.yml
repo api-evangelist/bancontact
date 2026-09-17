@@ -1,0 +1,24 @@
+generated: '2026-09-17'
+method: generated
+source: >-
+  Packaged Agent Skills generated from the three first-party Bancontact Pro OpenAPI bundles.
+  No provider-published skills or AGENTS.md exist (searched docs.bancontactpro.com and GitHub
+  2026-09-17). Every step is grounded in an operationId verified verbatim in ../openapi/*.yml;
+  cross-cutting rules cite ../conventions/, ../errors/, ../authentication/ and ../sandbox/.
+skills:
+  - file: bancontact-accept-qr-payment.md
+    name: Accept a QR / deeplink payment
+    api: openapi/bancontact-payment-v3-api-openapi.yml
+    operations: [create, merchant-get-payment, cancel_payment, search]
+  - file: bancontact-verify-callback.md
+    name: Verify and acknowledge a payment callback
+    api: openapi/bancontact-payment-v3-api-openapi.yml
+    operations: [callback, merchant-acknowledge, merchant-get-payment]
+  - file: bancontact-refund-payment.md
+    name: Refund a payment
+    api: openapi/bancontact-payment-refund-service-api-openapi.yml
+    operations: [create-refund, createRefund, getRefundById]
+  - file: bancontact-reconcile-payouts.md
+    name: Reconcile payouts
+    api: openapi/bancontact-merchant-reconciliation-api-openapi.yml
+    operations: [getPayoutList, getPayments, getRefunds]

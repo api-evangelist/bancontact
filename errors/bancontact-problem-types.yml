@@ -1,0 +1,142 @@
+generated: '2026-09-17'
+method: searched
+format: custom-json
+source: >-
+  DERIVED from the 4xx/5xx responses of the three first-party OpenAPI bundles (openapi/*.yml —
+  every code below is named in a response description of a real operationId) and ENRICHED with
+  the provider's error reference at
+  https://docs.bancontactpro.com/guides/general/errorsandstatuses052025 (titles, remediation).
+docs: https://docs.bancontactpro.com/guides/general/errorsandstatuses052025
+envelope:
+  content_type: application/json
+  schema: components.schemas.error (Payment V3) / ErrorResponse (Refund, Reconciliation)
+  fields:
+    code: Unique error identifier — react to this programmatically
+    message: Human-readable description
+    traceId: Request-level id — quote it to devsupport@bancontact.com
+    spanId: Operation-level id for distributed tracing
+  example: '{"code": "UNAUTHORIZED", "message": "API key is missing or invalid.", "traceId": "abc123xyz456", "spanId": "op789trace"}'
+  note: >-
+    Payment V3 requires all four fields; the Refund and Reconciliation ErrorResponse schemas
+    declare only code + message.
+http_statuses:
+  - {status: 400, title: Bad Request, meaning: malformed request or invalid parameters}
+  - {status: 401, title: Unauthorized, meaning: API key missing or invalid}
+  - {status: 403, title: Forbidden, meaning: key valid but not allowed for this resource/action}
+  - {status: 404, title: Not Found}
+  - {status: 409, title: Conflict}
+  - {status: 422, title: Unprocessable Entity, meaning: semantically invalid / business rule failure}
+  - {status: 429, title: Too Many Requests, meaning: 'rate limit exceeded; no numeric limit or header is published'}
+  - {status: 500, title: Internal Server Error}
+  - {status: 503, title: Service Unavailable, meaning: temporary overload or maintenance}
+problem_types:
+  - code: UNAUTHORIZED
+    status: 401
+    title: API key or credentials invalid or missing
+    operations: [merchant-get-payment, cancel_payment, search, create, create_static_qr_payment, merchant-acknowledge, create-refund, createRefund, getRefundById, getPayoutList, getPayments, getRefunds]
+    remediation: 'Send the per-product API key as `Authorization: Bearer <key>`; request a key via the portal (PROD) or devsupport@bancontact.com (PREPROD).'
+  - code: ACCESS_DENIED
+    status: 403
+    title: Key does not have permission for this resource
+    operations: [merchant-get-payment, cancel_payment, search, create, create_static_qr_payment, create-refund, createRefund, getRefundById, getPayoutList, getPayments, getRefunds]
+    remediation: "The key's resource (PAYMENTPROFILE:{profileId}) or authority (MERCHANT_PAYMENT / MERCHANT_REFUND) does not match; use the key issued for that product profile."
+  - code: CALLER_NOT_ALLOWED_TO_CANCEL
+    status: 403
+    title: Caller may not cancel this payment
+    operations: [cancel_payment]
+    remediation: Only a participant of the payment may cancel it.
+  - code: PAYMENT_NOT_FOUND
+    status: 404
+    title: No payment for the given id
+    operations: [merchant-get-payment, cancel_payment, merchant-acknowledge, create-refund, getRefundById]
+  - code: PROFILE_NOT_FOUND
+    status: 404
+    title: Product profile not found
+    operations: [create, create_static_qr_payment]
+    remediation: Check the PPID the key was issued for.
+  - code: REFUND_NOT_FOUND
+    status: 404
+    title: Refund does not exist or is not accessible
+    operations: [getRefundById]
+  - code: PAYOUT_NOT_FOUND
+    status: 404
+    title: No payout for the given payout-id
+    operations: [getPayments, getRefunds]
+  - code: PAYMENT_NOT_PENDING
+    status: 422
+    title: Payment is no longer pending
+    operations: [cancel_payment]
+    remediation: Only PENDING or IDENTIFIED payments can be cancelled; a confirmed payment must be refunded instead.
+  - code: PAYMENT_CONFLICT
+    status: 409
+    title: Resource conflict (e.g. duplicate operation)
+  - code: BODY_MISSING
+    status: 400
+    title: Request body missing
+    operations: [create, create_static_qr_payment, merchant-acknowledge]
+  - code: FIELD_REQUIRED
+    status: 400
+    title: Required field missing
+    operations: [create, create_static_qr_payment]
+  - code: VALIDATION_ERROR
+    status: 400
+    title: Input validation failed
+    operations: [createRefund, getRefundById]
+  - code: BAD_REQUEST
+    status: 400
+    title: Malformed reconciliation query
+    operations: [getPayoutList, getPayments, getRefunds]
+    remediation: Dates are yyyy-MM-dd; start-date/end-date must both be given and span at most 30 days.
+  - code: QR_NO_LONGER_IN_USE
+    status: 422
+    title: QR code expired or no longer valid
+  - code: UNABLE_TO_PAY_CREDITOR
+    status: 422
+    title: Payout to the merchant failed
+    operations: [create, create_static_qr_payment]
+  - code: REFUND_NOT_AVAILABLE
+    status: 422
+    title: Debtor details not available (P2P payment)
+    operations: [create-refund]
+  - code: PAYMENT_FOR_REFUND_NOT_FOUND
+    status: 422
+    title: Payment to refund not found
+    operations: [createRefund]
+  - code: INVALID_REFUND_AMOUNT
+    status: 422
+    title: Refund amount too high
+    operations: [createRefund]
+    remediation: Partial refunds may not exceed the remaining refundable amount of the SUCCEEDED payment.
+  - code: REFUND_NOT_ALLOWED
+    status: 422
+    title: Refunds not enabled for this merchant / product
+    operations: [createRefund]
+    remediation: Ask your Account Manager or devsupport@bancontact.com to activate the refund endpoint (refundAllowed).
+  - code: REFUND_NOT_POSSIBLE
+    status: 422
+    title: Refund not possible for this payment at the moment
+    operations: [createRefund]
+    remediation: The payment must be SUCCEEDED and the merchant must have sufficient funds in the ongoing settlement payout.
+  - code: REFUND_REQUEST_CONFLICT
+    status: 422
+    title: Idempotency-Key reused with different parameters
+    operations: [createRefund]
+    remediation: Reuse the key only for exact retries; generate a new key for a deliberate additional refund.
+  - code: TECHNICAL_ERROR
+    status: 500
+    title: Backend error
+    operations: [merchant-get-payment, cancel_payment, search, create, create_static_qr_payment, create-refund, createRefund, getRefundById, getPayoutList, getPayments, getRefunds]
+    remediation: Retry with exponential backoff; if persistent contact devsupport@bancontact.com with traceId.
+  - code: TRY_AGAIN_LATER
+    status: 503
+    title: Temporary failure
+    operations: [create, create_static_qr_payment]
+    remediation: Retry after a delay.
+best_practices:
+  - Log traceId and spanId on every error; Bancontact support keys investigations on them.
+  - 4xx — fix the request; 5xx — retry with exponential backoff.
+  - Honour 429 with retry-after logic (the docs name no header; treat as backoff).
+  - If callback signature verification keeps failing, GET /v3/payments/{id} to learn the real status.
+related:
+  decline_codes: errors/bancontact-decline-codes.yml
+  conventions: conventions/bancontact-conventions.yml

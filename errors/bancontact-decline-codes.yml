@@ -1,0 +1,29 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  https://docs.bancontactpro.com/guides/general/errorsandstatuses052025 (Payment Statuses table)
+  and components.schemas.merchant-payment-status in openapi/bancontact-payment-v3-api-openapi.yml.
+  Bancontact Pro does NOT publish an issuer decline-reason taxonomy: a bank-side decline surfaces
+  only as the terminal payment status AUTHORIZATION_FAILED (or FAILED), with no reason code in the
+  payment body or callback. Recorded as the honest shape of the surface — not padded.
+docs: https://docs.bancontactpro.com/guides/general/errorsandstatuses052025
+envelope_field: status   # on Create/Get/Search Payment responses and on the callback body
+reason_code_field: null  # no decline reason is exposed to the merchant
+masked_to_buyer: all     # the consumer sees the decline in the Bancontact Pay / bank app; the merchant sees only the status
+decline_count: 2
+decline_codes:
+  - code: AUTHORIZATION_FAILED
+    final: true
+    meaning: The transaction failed bank-side validation — common reasons are insufficient funds and card limits.
+    action: Do not retry the same payment; create a new payment and let the consumer pay again (or choose another card/bank app).
+  - code: FAILED
+    final: true
+    meaning: Technical or logical error during the payment process (e.g. authorization failed, sync-callback rejected or timed out 3x).
+    action: Inspect your own callback endpoint's behaviour if sync callback is configured; otherwise create a new payment.
+related_terminal_statuses:
+  - {code: CANCELLED, meaning: 'explicitly cancelled by the merchant (DELETE /v3/payments/{id}) or after the consumer scanned'}
+  - {code: EXPIRED, meaning: 'not completed in time; a payment id is valid 20 minutes online and 2 minutes in-store (FAQ)'}
+  - {code: VOIDED, meaning: 'voided after consumer confirmation when VOID is active and the merchant did not acknowledge'}
+test_data: >-
+  PREPROD test cards that force declines (KBC ...9723 Insufficient funds, ...9731 Card Refused by
+  Issuer) are recorded in sandbox/bancontact-sandbox.yml.

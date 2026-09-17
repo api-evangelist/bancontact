@@ -1,0 +1,154 @@
+generated: '2026-09-17'
+method: probed
+source: >-
+  Live GET of /.well-known/{security.txt, openid-configuration, oauth-authorization-server,
+  oauth-protected-resource, api-catalog, ai-plugin.json, agent-card.json, agent.json} on every
+  host the record knows — registrable domains + www, the API baseURL host and its PREPROD twin
+  (OpenAPI servers[]), the docs host, the JWKS host, the checkout host, the merchant-portal
+  hosts and the legacy Payconiq hosts — on 2026-09-17 with a browser User-Agent.
+description: >-
+  Two real documents were served. (1) docs.bancontactpro.com/.well-known/oauth-authorization-server
+  is the Redocly documentation platform's own OAuth metadata (issuer auth.cloud.redocly.com) for a
+  docs-MCP feature; the endpoints it advertises under /_mcp return 404 on this portal, so it is
+  recorded as platform-authored and NOT as a Bancontact API auth server. (2) The Bancontact Pro
+  merchant portal's Keycloak realm publishes OIDC discovery at
+  sso.portal.bancontactpro.com/realms/merchant-portal/.well-known/openid-configuration — that is
+  the portal login, not the merchant API, which uses API keys + detached JWS. No security.txt,
+  api-catalog, ai-plugin or A2A agent card exists on any host. pay.bancontact.net and
+  portal.bancontactpro.com answer 200 with an SPA HTML shell for every path — recorded as misses.
+hosts:
+  - host: bancontact.com
+    note: every /.well-known/ path 302s to www.bancontact.com, which 404s
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/oauth-protected-resource, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
+  - host: www.bancontact.com
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/oauth-protected-resource, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
+  - host: docs.bancontactpro.com
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        content_type: application/json
+        file: well-known/bancontact-docs-oauth-authorization-server.json
+        note: >-
+          Redocly docs-platform metadata (issuer https://auth.cloud.redocly.com); its
+          /_mcp/oauth2/auth, /_mcp/register and /_mcp endpoints answer 404 here. Platform-authored;
+          not an authorization server for the Bancontact Pro merchant API.
+      - {path: /.well-known/oauth-protected-resource, status: 404}
+      - {path: /.well-known/oauth-protected-resource/_mcp, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
+  - host: merchant.api.bancontact.net
+    note: API host answers 403 (empty body) for every unauthenticated path, including ?wsdl and /openapi.json
+    documents:
+      - {path: /.well-known/security.txt, status: 403}
+      - {path: /.well-known/openid-configuration, status: 403}
+      - {path: /.well-known/oauth-authorization-server, status: 403}
+      - {path: /.well-known/oauth-protected-resource, status: 403}
+      - {path: /.well-known/api-catalog, status: 403}
+      - {path: /.well-known/ai-plugin.json, status: 403}
+      - {path: /.well-known/agent-card.json, status: 403}
+      - {path: /.well-known/agent.json, status: 403}
+  - host: merchant.api.preprod.bancontact.net
+    documents:
+      - {path: /.well-known/security.txt, status: 403}
+      - {path: /.well-known/openid-configuration, status: 403}
+      - {path: /.well-known/oauth-authorization-server, status: 403}
+      - {path: /.well-known/oauth-protected-resource, status: 403}
+      - {path: /.well-known/api-catalog, status: 403}
+      - {path: /.well-known/ai-plugin.json, status: 403}
+      - {path: /.well-known/agent-card.json, status: 403}
+      - {path: /.well-known/agent.json, status: 403}
+  - host: sso.portal.bancontactpro.com
+    documents:
+      - path: /realms/merchant-portal/.well-known/openid-configuration
+        status: 200
+        content_type: application/json
+        file: well-known/bancontact-merchant-portal-openid-configuration.json
+        note: >-
+          Keycloak OIDC discovery for the Bancontact Pro merchant portal login (client
+          merchant-portal-frontend); portal.bancontactpro.com and merchant-portal.bancontact.net
+          both redirect here. Not the merchant API's auth scheme.
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+  - host: portal.bancontactpro.com
+    note: SPA catch-all — 200 text/html shell for every /.well-known/ path; not documents
+    documents:
+      - {path: /.well-known/security.txt, status: 200, real_document: false}
+      - {path: /.well-known/openid-configuration, status: 200, real_document: false}
+      - {path: /.well-known/oauth-authorization-server, status: 200, real_document: false}
+      - {path: /.well-known/api-catalog, status: 200, real_document: false}
+      - {path: /.well-known/agent-card.json, status: 200, real_document: false}
+      - {path: /.well-known/agent.json, status: 200, real_document: false}
+  - host: pay.bancontact.net
+    note: Bancontact Checkout SPA — 200 text/html shell for every /.well-known/ path; not documents
+    documents:
+      - {path: /.well-known/security.txt, status: 200, real_document: false}
+      - {path: /.well-known/openid-configuration, status: 200, real_document: false}
+      - {path: /.well-known/oauth-authorization-server, status: 200, real_document: false}
+      - {path: /.well-known/oauth-protected-resource, status: 200, real_document: false}
+      - {path: /.well-known/api-catalog, status: 200, real_document: false}
+      - {path: /.well-known/ai-plugin.json, status: 200, real_document: false}
+      - {path: /.well-known/agent-card.json, status: 200, real_document: false}
+      - {path: /.well-known/agent.json, status: 200, real_document: false}
+  - host: www.bancontactpro.com
+    note: S3/CloudFront static "Bancontact Pro Hub" — 403 application/xml AccessDenied for every path
+    documents:
+      - {path: /.well-known/security.txt, status: 403}
+      - {path: /.well-known/openid-configuration, status: 403}
+      - {path: /.well-known/oauth-authorization-server, status: 403}
+      - {path: /.well-known/api-catalog, status: 403}
+      - {path: /.well-known/agent-card.json, status: 403}
+      - {path: /.well-known/agent.json, status: 403}
+  - host: jwks.bancontact.net
+    note: serves the production JWKS at / (3 keys, RS256 + ES256); /.well-known/* is 403 AccessDenied
+    documents:
+      - {path: /, status: 200, content_type: application/json, note: JWKS — not saved (rotating key material)}
+      - {path: /.well-known/security.txt, status: 403}
+      - {path: /.well-known/openid-configuration, status: 403}
+      - {path: /.well-known/oauth-authorization-server, status: 403}
+      - {path: /.well-known/api-catalog, status: 403}
+      - {path: /.well-known/agent-card.json, status: 403}
+      - {path: /.well-known/agent.json, status: 403}
+  - host: bancontactpro.com
+    note: apex does not resolve / no TLS listener (connection failed)
+    documents:
+      - {path: /.well-known/security.txt, status: 0}
+      - {path: /.well-known/agent-card.json, status: 0}
+  - host: bancontact.net
+    note: apex and www do not resolve (connection failed)
+    documents:
+      - {path: /.well-known/security.txt, status: 0}
+      - {path: /.well-known/agent-card.json, status: 0}
+  - host: payconiq.be
+    note: legacy brand — every /.well-known/ path 302s to www.bancontact.com (404)
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
+  - host: docs.payconiq.be
+    note: legacy docs host — 301 to https://docs.bancontactpro.com/ for every path
+    documents:
+      - {path: /.well-known/security.txt, status: 301}
+      - {path: /.well-known/agent-card.json, status: 301}
+      - {path: /.well-known/agent.json, status: 301}

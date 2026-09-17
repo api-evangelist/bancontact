@@ -1,163 +1,343 @@
 aid: bancontact
 name: Bancontact
-description: >-
-  Bancontact is Belgium's most popular electronic payment system, operating through the
-  Bancontact Payconiq Company (now transitioning to Bancontact Pro brand). The platform
-  provides debit card payments, QR code payments, and mobile payments via the Payconiq
-  by Bancontact app. The REST API enables merchants to accept payments online, in-app,
-  and via QR codes with settlement in Belgian bank accounts.
+description: 'Bancontact Company nv/sa (formerly Bancontact Payconiq Company) operates Belgium''s national debit
+  card scheme and the Bancontact Pro merchant acceptance service (the rebranded Payconiq merchant platform). The
+  Bancontact Pro developer portal publishes three OpenAPI 3.1 contracts on merchant.api.bancontact.net: the Payment
+  V3 API (create, search, cancel and acknowledge QR/deeplink/checkout payments, with JWS-signed status callbacks),
+  the Payment Refund Service API (idempotent refunds against SUCCEEDED payments) and the Merchant Reconciliation
+  API (D+1 payouts, payments and refunds). Merchants authenticate with per-product API keys and ES256 detached JWS
+  signatures verified against public JWKS endpoints, test end-to-end in a PREPROD environment with published test
+  cards, and pay €0.06 per transaction plus €18 per year.'
 type: Index
 deliveryModel:
-  model: unknown
+  model: saas
   open_source: false
-  commercial: false
-  callable_host: false
-  label: Delivery model not determined — needs a product licence on record
-  confidence: low
+  commercial: true
+  callable_host: true
+  label: Hosted merchant acceptance API (SaaS) — callable on merchant.api.bancontact.net with a per-product API
+    key issued after merchant onboarding
+  confidence: high
   source:
-  - none
-  generated: '2026-08-28'
-  method: derived
+  - https://docs.bancontactpro.com/guides/general/gettingstarted052025v4
+  - https://www.bancontact.com/en/professional/our-solutions/integrated-solution
+  generated: '2026-09-17'
+  method: searched
 accessModel:
-  pricing: freemium
-  onboarding: unknown
-  trial: false
+  pricing: paid
+  onboarding: contract
+  trial: true
   try_now: false
   public: false
-  label: Freemium
-  confidence: medium
+  label: Paid — €0.06 per transaction + €18/year; PREPROD sandbox on request (up to 2 weeks), production keys after
+    contract
+  confidence: high
   source:
-  - plans
-  generated: '2026-07-22'
-  method: derived
+  - https://www.bancontact.com/en/professional/our-solutions/integrated-solution
+  - https://docs.bancontactpro.com/guides/general/gettingstarted052025v4
+  generated: '2026-09-17'
+  method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
 tags:
-  - Banking
-  - Belgium
-  - Debit Cards
-  - E-Commerce
-  - Fintech
-  - Payments
+- Banking
+- Belgium
+- Debit Cards
+- E-Commerce
+- Fintech
+- Payments
+- QR Codes
+- Refunds
+- Reconciliation
+- Mobile Payments
 url: https://raw.githubusercontent.com/api-evangelist/bancontact/refs/heads/main/apis.yml
 created: '2025-01-01'
-modified: '2026-04-21'
+modified: '2026-09-17'
 specificationVersion: '0.23'
 apis:
-  - aid: bancontact:payconiq-acceptance-api
-    name: Bancontact Payconiq Acceptance API
-    description: >-
-      REST API for accepting Bancontact payments online and via QR code. Enables merchants
-      to create payment transactions, generate QR codes, handle callbacks, and process
-      refunds. The API is organized around REST with HTTP response codes, header authentication,
-      and standard HTTP verbs. Transitioning to Bancontact Pro branding in 2026.
-    humanURL: https://docs.bancontactpro.com/
-    tags:
-      - Checkout
-      - Payments
-      - QR Code
-      - Transaction
-      - Refunds
-    tags_raw:
-      - Checkout
-      - Payments
-      - QR Code
-      - Transactions
-      - Refunds
-    properties:
-      - type: Documentation
-        url: https://docs.bancontactpro.com/
-      - type: Documentation
-        url: https://docs.payconiq.be/
-        name: Legacy Payconiq Documentation
-common:
-  - type: DomainSecurity
-    url: security/bancontact-domain-security.yml
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/bancontactpayconiqcompany
-  - type: Website
-    url: https://www.bancontact.com/
-    name: Bancontact
+- aid: bancontact:payconiq-acceptance-api
+  name: Bancontact Pro Payment V3 API
+  description: First-party OpenAPI 3.1 contract (v3.6.5) for the Bancontact Pro merchant acceptance service, formerly
+    the Payconiq merchant API. Merchants create dynamic QR / deeplink / checkout payments, static-QR POS payments,
+    search and cancel payments, acknowledge JWS-signed status callbacks, and look up a debtor's refund IBAN. Authenticated
+    with a per-product API key in the Authorization header plus an ES256 detached JWS request signature; served
+    on merchant.api.bancontact.net with a PREPROD twin.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  tags:
+  - Checkout
+  - Payments
+  - QR Codes
+  - Transaction
+  - Refunds
+  - Webhooks
+  tags_raw:
+  - Checkout
+  - Payments
+  - QR Code
+  - Transactions
+  - Refunds
+  - Callbacks
+  properties:
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: OpenAPI
+    url: openapi/bancontact-payment-v3-api-openapi.yml
+  - type: OpenAPI
+    url: https://docs.bancontactpro.com/_bundle/apis/merchant-payment.openapi.yaml
+    name: Provider-published bundle
   - type: Documentation
     url: https://docs.bancontactpro.com/
     name: Bancontact Pro Developer Portal
-  - type: SpectralRules
-    url: rules/bancontact-spectral-rules.yml
-  - type: Vocabulary
-    url: vocabulary/bancontact-vocabulary.yaml
-  - type: JSONLD
-    url: json-ld/bancontact-context.jsonld
-  - name: Features
-    type: Features
-    data:
-      - name: Online Payments
-        description: Accept Bancontact debit card payments in e-commerce checkouts.
-      - name: QR Code Payments
-        description: Generate QR codes for in-store and contactless payment acceptance.
-      - name: Mobile App Payments
-        description: Payconiq by Bancontact app integration for mobile checkout.
-      - name: Webhooks
-        description: Real-time payment status notifications via webhook callbacks.
-      - name: Refunds
-        description: Programmatic refund processing for completed transactions.
-      - name: Multi-currency
-        description: EUR-denominated payments with Belgian bank account settlement.
-      - name: Deep Links
-        description: Mobile deep links to open the Payconiq app directly from merchant checkout.
-  - name: UseCases
-    type: UseCases
-    data:
-      - name: E-Commerce Checkout
-        description: Accept Bancontact as a local Belgian payment method at checkout.
-      - name: QR Code POS
-        description: In-store and restaurant QR code payment acceptance.
-      - name: Mobile In-App Payments
-        description: Integrate Bancontact into iOS and Android apps.
-      - name: Invoice Payments
-        description: Payment links and QR codes for invoicing and B2C collections.
-      - name: Subscription Billing
-        description: Recurring payment collection from Belgian consumers.
-  - name: Integrations
-    type: Integrations
-    data:
-      - name: Adyen
-        description: Accept Bancontact via Adyen payment gateway.
-      - name: Computop
-        description: Accept Bancontact via Computop payment platform.
-      - name: PPRO
-        description: Access Bancontact via PPRO's local payment method network.
-      - name: Stripe
-        description: Accept Bancontact via Stripe payment infrastructure.
-      - name: Mollie
-        description: Accept Bancontact via Mollie payment service.
-      - name: MultiSafepay
-        description: Accept Bancontact via MultiSafepay payment gateway.
-  - type: Integrations
-    url: https://www.bancontact.com/partners
-  - type: LlmsText
-    url: https://docs.bancontactpro.com/llms.txt
-integrations:
-  - name: Bancontact
+  - type: Overlay
+    url: overlays/bancontact-payment-v3-api-overlay.yaml
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  baseURL: https://merchant.api.bancontact.net
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
+- aid: bancontact:payment-refund-service-api
+  name: Bancontact Pro Payment Refund Service API
+  description: First-party OpenAPI 3.1 contract (v3.0.3) for creating and retrieving refunds against SUCCEEDED Bancontact
+    Pro payments. Refund creation is idempotent on a required Idempotency-Key header, must be activated per merchant
+    by Bancontact support, and is secured with an ES256 detached JWS request signature; refunds are deducted from
+    the merchant's next bulk payout.
+  humanURL: https://docs.bancontactpro.com/apis/refund-public.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - Refunds
+  - Payments
+  - Idempotency
+  tags_raw:
+  - Refunds
+  - Payments
+  - Idempotency
+  properties:
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: OpenAPI
+    url: openapi/bancontact-payment-refund-service-api-openapi.yml
+  - type: OpenAPI
+    url: https://docs.bancontactpro.com/_bundle/apis/refund-public.openapi.yaml
+    name: Provider-published bundle
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+    name: Refunds guide
+  - type: Overlay
+    url: overlays/bancontact-payment-refund-service-api-overlay.yaml
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
+- aid: bancontact:merchant-reconciliation-api
+  name: Bancontact Pro Merchant Reconciliation API
+  description: 'First-party OpenAPI 3.1 contract (v3.0.1) for reconciling Bancontact Pro payouts with the payments
+    and refunds they settle: list payouts by date, list SUCCEEDED payments and refunds by payout id or 30-day date
+    range, paged with page/size. Reconciliation data is published D+1 from 09:00 CET in both PREPROD and PROD; requests
+    carry an ES256 detached JWS signature.'
+  humanURL: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - Reconciliation
+  - Payouts
+  - Payments
+  - Refunds
+  tags_raw:
+  - Reconciliation
+  - Payouts
+  - Payments
+  - Refunds
+  properties:
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: OpenAPI
+    url: openapi/bancontact-merchant-reconciliation-api-openapi.yml
+  - type: OpenAPI
+    url: https://docs.bancontactpro.com/_bundle/apis/merchant-reconciliation.openapi.yaml
+    name: Provider-published bundle
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+    name: Reconciliation guide
+  - type: Overlay
+    url: overlays/bancontact-merchant-reconciliation-api-overlay.yaml
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
+common:
+- type: Authentication
+  url: authentication/bancontact-authentication.yml
+- type: DomainSecurity
+  url: security/bancontact-domain-security.yml
+- type: LinkedIn
+  url: https://www.linkedin.com/company/bancontactcompany/
+- type: Website
+  url: https://www.bancontact.com/
+  name: Bancontact
+- type: Documentation
+  url: https://docs.bancontactpro.com/
+  name: Bancontact Pro Developer Portal
+- type: SpectralRules
+  url: rules/bancontact-spectral-rules.yml
+- type: Vocabulary
+  url: vocabulary/bancontact-vocabulary.yaml
+- type: JSONLD
+  url: json-ld/bancontact-context.jsonld
+- name: Features
+  type: Features
+  data:
+  - name: Online Payments
+    description: Accept Bancontact debit card payments in e-commerce checkouts.
+  - name: QR Code Payments
+    description: Generate QR codes for in-store and contactless payment acceptance.
+  - name: Mobile App Payments
+    description: Payconiq by Bancontact app integration for mobile checkout.
+  - name: Webhooks
+    description: Real-time payment status notifications via webhook callbacks.
+  - name: Refunds
+    description: Programmatic refund processing for completed transactions.
+  - name: Multi-currency
+    description: EUR-denominated payments with Belgian bank account settlement.
+  - name: Deep Links
+    description: Mobile deep links to open the Payconiq app directly from merchant checkout.
+- name: UseCases
+  type: UseCases
+  data:
+  - name: E-Commerce Checkout
+    description: Accept Bancontact as a local Belgian payment method at checkout.
+  - name: QR Code POS
+    description: In-store and restaurant QR code payment acceptance.
+  - name: Mobile In-App Payments
+    description: Integrate Bancontact into iOS and Android apps.
+  - name: Invoice Payments
+    description: Payment links and QR codes for invoicing and B2C collections.
+  - name: Subscription Billing
+    description: Recurring payment collection from Belgian consumers.
+- name: Integrations
+  type: Integrations
+  data:
   - name: Adyen
-  - name: EMS
-  - name: Keyware
-  - name: Loyaltek
-  - name: myPOS
-  - name: SIX
-  - name: Paybox by Verifone
-  - name: Acquiris
-  - name: iCard
-  - name: G+D Mobile Security
-  - name: Gemalto
-  - name: life.augmented
-  - name: europabank
-  - name: fime
-  - name: riscure
-  - name: Trusted Labs
-  - name: Modirum
-  - name: Argenta
-  - name: Banque VanBreda
-  - name: Belfius
-  - name: Beobank
+    description: Accept Bancontact via Adyen payment gateway.
+  - name: Computop
+    description: Accept Bancontact via Computop payment platform.
+  - name: PPRO
+    description: Access Bancontact via PPRO's local payment method network.
+  - name: Stripe
+    description: Accept Bancontact via Stripe payment infrastructure.
+  - name: Mollie
+    description: Accept Bancontact via Mollie payment service.
+  - name: MultiSafepay
+    description: Accept Bancontact via MultiSafepay payment gateway.
+- type: Integrations
+  url: https://www.bancontact.com/partners
+- type: LLMsTxt
+  url: https://docs.bancontactpro.com/llms.txt
+  name: Provider-published llms.txt
+- type: DeveloperPortal
+  url: https://docs.bancontactpro.com/
+- type: APIReference
+  url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+- type: GettingStarted
+  url: https://docs.bancontactpro.com/guides/general/gettingstarted052025v4
+- type: FAQ
+  url: https://docs.bancontactpro.com/guides/general/faq
+  name: Developer FAQ
+- type: Support
+  url: https://www.bancontact.com/en/professional/contact
+  name: Professional contact (+32 2 793 01 43); dev support devsupport@bancontact.com
+- type: HelpCenter
+  url: https://www.bancontact.com/en/faq?audience=professional
+  name: Merchant FAQ
+- type: Pricing
+  url: https://www.bancontact.com/en/professional/our-solutions/integrated-solution
+  name: €0.06 per transaction + €18/year per account, excl. VAT
+- type: Login
+  url: https://portal.bancontactpro.com/
+  name: Bancontact Pro merchant portal (Keycloak SSO)
+- type: SignUp
+  url: https://www.bancontact.com/en/professional/start/integrated-solution
+  name: How to set up the Bancontact Pro integrated solution
+- type: TermsOfService
+  url: https://www.bancontact.com/en/privacy-statement-and-terms-conditions
+- type: PrivacyPolicy
+  url: https://www.bancontact.com/en/privacy-statement-and-terms-conditions
+- type: Blog
+  url: https://www.bancontact.com/en/news
+  name: News
+- type: Compliance
+  url: https://www.bancontact.com/en/professional/legal-and-administrative-specifications
+  name: SEPA compliance + interchange/service fee disclosures
+- type: LLMsTxt
+  url: llms/bancontact-llms.txt
+  name: Saved verbatim copy of docs.bancontactpro.com/llms.txt
+- type: Packages
+  url: packages/bancontact-packages.yml
+  name: No first-party SDK; community packages + legacy Payconiq JWS utilities recorded, none official
+- type: WellKnown
+  url: well-known/bancontact-well-known.yml
+  name: 'Two served documents: Redocly platform OAuth metadata on the docs host (platform-authored, MCP endpoints
+    404) and the merchant-portal Keycloak OIDC discovery; no security.txt / api-catalog / agent card on any host'
+- type: X-MCPServerCandidate
+  url: mcp/bancontact-mcp.yml
+  name: Derived candidate tool list only — no MCP server exists (deployment.mode none)
+- type: Conformance
+  url: conformance/bancontact-conformance.yml
+- type: ErrorCatalog
+  url: errors/bancontact-problem-types.yml
+- type: DeclineCodes
+  url: errors/bancontact-decline-codes.yml
+- type: Lifecycle
+  url: lifecycle/bancontact-lifecycle.yml
+- type: Deprecation
+  url: lifecycle/bancontact-lifecycle.yml
+  name: Dated PREPROD-first migration notices (payconiq.com → pay.bancontact.net from 2026-05-11); no Sunset/Deprecation
+    headers
+- type: Sandbox
+  url: sandbox/bancontact-sandbox.yml
+  name: PREPROD environment + PREPROD Bancontact Pay app + published KBC test cards
+- type: Conventions
+  url: conventions/bancontact-conventions.yml
+- type: Idempotency
+  url: conventions/bancontact-conventions.yml
+  name: Idempotency-Key required on createRefund only — coverage partial (1 of 6 writes)
+- type: ChangeLog
+  url: changelog/bancontact-changelog.yml
+  name: Dated History sections embedded in each OpenAPI bundle
+- type: DataModel
+  url: data-model/bancontact-data-model.yml
+- type: Webhooks
+  url: asyncapi/bancontact-callbacks-webhooks.yml
+  name: JWS-signed payment status callbacks; no AsyncAPI published
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Plans
+  url: plans/bancontact-plans-pricing.yml
+  name: €0.06 per transaction + €18/year, searched from bancontact.com
+- type: RateLimits
+  url: rate-limits/bancontact-rate-limits.yml
+  name: 429 documented, no numeric limits or headers published (limit_count 0)
+- type: FinOps
+  url: finops/bancontact-finops.yml
+integrations:
+- name: Bancontact
+- name: Adyen
+- name: EMS
+- name: Keyware
+- name: Loyaltek
+- name: myPOS
+- name: SIX
+- name: Paybox by Verifone
+- name: Acquiris
+- name: iCard
+- name: G+D Mobile Security
+- name: Gemalto
+- name: life.augmented
+- name: europabank
+- name: fime
+- name: riscure
+- name: Trusted Labs
+- name: Modirum
+- name: Argenta
+- name: Banque VanBreda
+- name: Belfius
+- name: Beobank
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-09-17'
+  status: enriched
+  artifacts_added: 29
+  pass: local-v3

@@ -1,0 +1,172 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  Cross-cutting semantics read from the three first-party OpenAPI 3.1 bundles (openapi/*.yml)
+  and the developer-portal guides: Getting Started, API Errors Statuses and Responses, Refunds,
+  Callback, Reconciliation, FAQ (docs.bancontactpro.com, 2026-09-17). Every window and rule
+  below cites where the provider states it; nothing is inferred.
+description: >-
+  How the Bancontact Pro merchant API behaves across every operation: per-product API keys plus
+  ES256 detached JWS request signing, idempotency scoped to refund creation only, two paging
+  styles, a custom error envelope with trace ids, path-versioned contracts, undocumented rate
+  limits signalled only by 429, and a reversal surface of cancel-before-confirmation and
+  refund-after-success.
+base_url: https://merchant.api.bancontact.net
+preprod_url: https://merchant.api.preprod.bancontact.net
+api_style: REST over HTTPS (TLS 1.2/1.3), JSON request and response bodies, HAL-style _links
+
+authentication:
+  scheme: 'Authorization: Bearer <per-product API key> + Signature: <detached JWS, ES256>'
+  docs: https://docs.bancontactpro.com/guides/general/gettingstarted052025v4
+  detail: authentication/bancontact-authentication.yml
+  note: >-
+    Keys are issued per Product Profile (PPID) and carry the subjectType / resource / authority
+    each operation checks; refund creation must be activated by Bancontact support.
+
+idempotency:
+  supported: true
+  coverage: partial
+  mechanism: Idempotency-Key request header (required, max 64 chars, UUID recommended)
+  scope:
+    - createRefund
+  applies_to: >-
+    POST /v3/payments/{payment-id}/refunds only. Payment creation (create,
+    create_static_qr_payment), cancel, acknowledge and search carry no idempotency key.
+  retention: not stated
+  conflict_behavior: >-
+    Reusing a key with different parameters returns 422 REFUND_REQUEST_CONFLICT; the docs
+    instruct merchants to keep the same key for retries of a 4xx/5xx failure and to change it
+    only when deliberately issuing a second refund.
+  docs: https://docs.bancontactpro.com/guides/general/refunds052025
+  note: >-
+    1 of 6 mutating operations is idempotent. For payment creation the documented safety net is
+    different — create_static_qr_payment invalidates any active payment for the same
+    profileId+posId, and a merchant reference is echoed back so duplicates can be detected by
+    searching — but neither is replay protection.
+
+pagination:
+  styles:
+    - name: offset
+      operations: [search]
+      request_params: {limit: 'number of payments to return (default 10)', offset: 'zero-based start index'}
+      response_fields: {size: page size, totalPages: total pages, number: current page, totalElements: total matches, details: array of payments}
+      ordering: creation date descending
+      default_window: from = yesterday (today - 1 day)
+    - name: page
+      operations: [getPayoutList, getPayments, getRefunds]
+      request_params: {page: 'zero-based page index (default 0)', size: 'page size (default 10000)'}
+      constraints: start-date and end-date must both be present and span at most 30 days; or filter by payout-id
+      date_format: yyyy-MM-dd
+  docs: https://docs.bancontactpro.com/guides/general/reconciliation052025
+
+field_expansion:
+  supported: false
+  note: Responses are fixed shapes; related resources are reachable through _links (self, deeplink, qrcode, checkout, cancel, refund) whose presence depends on payment status.
+
+metadata:
+  supported: partial
+  mechanism: reference (max 35 chars, merchant's own id, SEPA extended character set), description (shown to the payer and on bank statements), bulkId (max 35, groups payouts), posId / shopId
+  note: No free-form metadata map; the fields above are the only merchant-owned data echoed back in responses, callbacks and payout remittance.
+
+request_tracing:
+  request_id_header: none documented on the request side
+  response_fields: traceId and spanId in every error body — quote them to devsupport@bancontact.com
+  jws_jti: the JWS jti claim is a unique request identifier the merchant generates per call
+  callback_user_agent: Bancontact Payments/v3
+
+versioning:
+  scheme: URL major (/v3) + semver per contract in info.version (3.6.5 / 3.0.3 / 3.0.1)
+  header: none
+  deprecation: dated migration notices on the portal, PREPROD-first — see lifecycle/bancontact-lifecycle.yml
+  changelog: changelog/bancontact-changelog.yml
+
+error_envelope:
+  content_type: application/json
+  shape: {code: string, message: string, traceId: string, spanId: string}
+  catalog: errors/bancontact-problem-types.yml
+  decline_codes: errors/bancontact-decline-codes.yml
+  retry_guidance: 4xx fix the request; 5xx and 503 TRY_AGAIN_LATER retry with exponential backoff
+
+rate_limiting:
+  documented: false
+  status_code: 429
+  headers: none published (no X-RateLimit-* / RateLimit / Retry-After documented)
+  guidance: '"Respect HTTP 429 responses with retry-after logic" (errors guide) — but no Retry-After header is specified'
+  detail: rate-limits/bancontact-rate-limits.yml
+
+callbacks:
+  mechanism: JWS-signed HTTP POST to the merchant's HTTPS callback URL on every status change; order not guaranteed
+  retry: up to 24 h until an HTTP 200 (triggers — no response in 15 s, 429, 500, 503, 504, 509); sync-callback mode times out at 5 s and gives up after 3 attempts, marking the payment FAILED
+  acknowledge: POST /v3/payments/{id}/acknowledge when VOID is active (status PENDING_MERCHANT_ACKNOWLEDGEMENT)
+  detail: asyncapi/bancontact-callbacks-webhooks.yml
+
+dry_run_mode:
+  supported: false
+  grade: none
+  note: No dry-run / validate-only flag exists; rehearsal happens in the PREPROD environment (sandbox/bancontact-sandbox.yml).
+
+payment_lifecycle:
+  statuses_intermediary: [PENDING, IDENTIFIED, AUTHORIZED, PENDING_MERCHANT_ACKNOWLEDGEMENT]
+  statuses_final: [SUCCEEDED, AUTHORIZATION_FAILED, FAILED, CANCELLED, EXPIRED, VOIDED]
+  expiry: a payment id is valid 20 minutes for online and 2 minutes for in-store payments (FAQ)
+  currency: EUR only (ISO 4217)
+  amounts: integer cents
+
+reversibility:
+  grade: verified
+  summary: >-
+    Two reversal paths exist and one carries a provider-stated window. A payment can be
+    cancelled only while PENDING or IDENTIFIED — i.e. before the consumer confirms — and the
+    contract states that window in the operation description; a SUCCEEDED payment can be
+    refunded (full or partial) through an idempotent endpoint, but the docs state no time
+    window for refunds, so that path is graded documented, not verified.
+  write_surfaces:
+    - operation: create / create_static_qr_payment
+      path: POST /v3/payments, POST /v3/payments/pos
+      action: Create a payment the consumer will confirm
+      reversal: cancel_payment
+      reversal_path: DELETE /v3/payments/{id}
+      window: "While status is PENDING or IDENTIFIED (before consumer confirmation); the payment otherwise expires on its own after 20 minutes online / 2 minutes in-store"
+      grade: verified
+      docs: https://docs.bancontactpro.com/apis/merchant-payment.openapi/merchant-endpoints/cancel_payment
+      note: >-
+        Operation description — "A payment can be cancelled only if has the status in PENDING or
+        IDENTIFIED. When a payment is cancelled the status will be set to CANCELLED"; 422
+        PAYMENT_NOT_PENDING otherwise. Expiry from
+        https://docs.bancontactpro.com/guides/general/faq.
+    - operation: SUCCEEDED payment (any create path)
+      path: POST /v3/payments/{payment-id}/refunds
+      action: Return money to the consumer after a successful payment
+      reversal: createRefund
+      reversal_path: POST /v3/payments/{payment-id}/refunds (Idempotency-Key required)
+      window: null
+      grade: documented
+      docs: https://docs.bancontactpro.com/guides/general/refunds052025
+      note: >-
+        Preconditions are stated (payment SUCCEEDED, refund endpoint activated for the merchant,
+        sufficient funds in the ongoing settlement payout; partial refunds allowed up to the
+        remaining amount, else INVALID_REFUND_AMOUNT) but NO time limit after the payment is
+        published, so no window is asserted here. Out-of-band alternative: GET
+        /v3/payments/{id}/debtor/refundIban returns the debtor IBAN for a manual SEPA transfer.
+    - operation: merchant-acknowledge
+      path: POST /v3/payments/{id}/acknowledge
+      action: Confirm a consumer-confirmed payment when VOID is active
+      reversal: none documented (not acknowledging leads to VOIDED)
+      window: null
+      grade: none
+      docs: https://docs.bancontactpro.com/guides/general/errorsandstatuses052025
+    - operation: createRefund
+      path: POST /v3/payments/{payment-id}/refunds
+      action: Issue a refund
+      reversal: none documented — a refund cannot be cancelled or reversed
+      window: null
+      grade: none
+      docs: https://docs.bancontactpro.com/guides/general/refunds052025
+
+related:
+  authentication: authentication/bancontact-authentication.yml
+  errors: errors/bancontact-problem-types.yml
+  lifecycle: lifecycle/bancontact-lifecycle.yml
+  rate_limits: rate-limits/bancontact-rate-limits.yml
+  sandbox: sandbox/bancontact-sandbox.yml
+  webhooks: asyncapi/bancontact-callbacks-webhooks.yml

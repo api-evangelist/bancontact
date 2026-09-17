@@ -1,0 +1,88 @@
+generated: '2026-09-17'
+method: searched
+source: >-
+  Read from the three first-party OpenAPI 3.1 contracts (openapi/*.yml) and the guides on
+  docs.bancontactpro.com plus www.bancontact.com/en/professional/legal-and-administrative-specifications
+  (2026-09-17). Every `conforms: true` cites the exact spec location or page; standards the
+  contract does not claim are recorded as false, never inferred.
+conformance:
+  - id: openapi-3.1
+    conforms: true
+    evidence: "openapi: 3.1.0 in all three bundles at https://docs.bancontactpro.com/_bundle/apis/*.openapi.yaml"
+  - id: rfc7797-detached-jws
+    name: JSON Web Signature (JWS) Unencoded Payload Option — detached signatures
+    conforms: true
+    evidence: >-
+      components.securitySchemes.JWS-Request-Signature-Payment / -Refund / JWS-Request-Signature
+      describe "Detached JWS signature" per RFC 7797 with alg ES256 and crit claims; callbacks carry
+      the same in the `signature` header (guides/general/callback052025).
+  - id: rfc7517-jwks
+    name: JSON Web Key Set publication for signature verification
+    conforms: true
+    evidence: "JWKS served at https://jwks.bancontact.net/ (200, 3 keys RS256+ES256) and https://jwks.preprod.bancontact.net/; merchants must host their own JWKS (securitySchemes description)."
+  - id: oauth2
+    conforms: false
+    evidence: "No oauth2 securityScheme in any bundle; API keys (Authorization: Bearer <api-key>) issued by Bancontact's API Manager. The only OAuth metadata on a provider host is the Keycloak realm for the merchant-portal login (well-known/), not the API."
+  - id: oidc
+    conforms: false
+    evidence: "No openIdConnect securityScheme. sso.portal.bancontactpro.com/realms/merchant-portal publishes OIDC discovery for portal users only."
+  - id: psd2
+    conforms: false
+    evidence: "Bancontact Pro is a merchant acceptance API (payee side), not a PSD2 XS2A account-access interface; no Berlin Group / STET shapes in the contract."
+  - id: rfc9457
+    conforms: false
+    evidence: "Errors use a custom application/json envelope {code, message, traceId, spanId} (components.schemas.error), not application/problem+json."
+  - id: pagination
+    conforms: true
+    style: mixed — offset/limit on POST /v3/payments/search; page/size (zero-based, default size 10000) on /v3/reconciliation/*
+    evidence: "openapi/bancontact-payment-v3-api-openapi.yml operationId search; openapi/bancontact-merchant-reconciliation-api-openapi.yml parameters page/size"
+  - id: idempotency
+    conforms: true
+    coverage: partial
+    evidence: "Required Idempotency-Key header (max 64 chars, UUID recommended) on createRefund only — components.parameters.Idempotency-Key in openapi/bancontact-payment-refund-service-api-openapi.yml; no idempotency on payment creation."
+  - id: iso-4217
+    conforms: true
+    evidence: "components.schemas.currency: 'Currency code. Only EUR is supported [ISO 4217]' with enum [EUR]"
+  - id: rfc3339-timestamps
+    conforms: true
+    evidence: "createdAt/expireAt/succeededAt use format: date-time; JOSE iat is ISO 8601 UTC (YYYY-MM-DDThh:mm:ss.sssZ)"
+  - id: hateoas-links
+    conforms: true
+    evidence: "components.schemas.links — self/deeplink/qrcode/cancel/checkout/refund hypermedia links whose inclusion depends on payment status"
+  - id: scim
+    conforms: false
+    evidence: not claimed anywhere in the contract or docs
+  - id: fapi
+    conforms: false
+    evidence: not claimed; no OAuth surface to profile
+domain_standards:
+  - id: sepa-epc
+    name: SEPA / European Payments Council rulebooks (SCT remittance + extended character set)
+    conforms: true
+    scope: domain_standard_conformance
+    evidence: >-
+      The CONTRACT itself binds to SEPA: components.schemas.payment_create_request.reference and
+      .description (and merchant-callback.description) require "SEPA Requirements for an Extended
+      Character Set (UNICODE Subset) - Best Practices | European Payments Council"
+      (openapi/bancontact-payment-v3-api-openapi.yml, Payment API 3.6.3 changelog entry 2025-08-22);
+      payouts are SEPA credit transfers whose remittance information is capped at 140 characters
+      "as standardized by the European Payments Council" and the endToEndId field matches the
+      End-to-end reference on the merchant's CAMT bank statement
+      (guides/general/payoutremittance052025, guides/general/faq). The scheme's SEPA compliance
+      statement and PDF live at
+      https://www.bancontact.com/en/professional/legal-and-administrative-specifications.
+  - id: iso-20022
+    name: ISO 20022 (datatype references, CAMT statement reconciliation)
+    conforms: partial
+    evidence: >-
+      The JOSE header iat claim is defined against the ISO 20022 ISODateTime datatype
+      (securitySchemes description links iso20022.org/standardsrepository) and reconciliation is
+      keyed on the CAMT End-to-end reference; the API does not itself exchange ISO 20022 messages,
+      so this is a reference, not a message-level conformance.
+compliance_program:
+  sepa_compliant: true
+  page: https://www.bancontact.com/en/professional/legal-and-administrative-specifications
+  note: >-
+    The page publishes a "SEPA Compliant" statement with a downloadable conditions PDF and the
+    scheme's fallback interchange and service fees. No SOC 2 / ISO 27001 / PCI DSS attestation is
+    published on any Bancontact site; no trust center exists (security/ probe: vdp=none trust=none).
