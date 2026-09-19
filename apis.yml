@@ -67,7 +67,7 @@ apis:
   - QR Codes
   - Transaction
   - Refunds
-  - Webhooks
+  - Callbacks
   tags_raw:
   - Checkout
   - Payments
