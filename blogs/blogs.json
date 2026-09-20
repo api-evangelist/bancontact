@@ -1,0 +1,14 @@
+{
+  "repo": "bancontact",
+  "feeds": [
+    {
+      "source": "https://www.bancontact.com/en/privacy-statement-and-terms-conditions",
+      "feed_url": "https://www.bancontact.com/en/privacy-statement-and-terms-conditions",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    }
+  ],
+  "post_count": 0,
+  "fetched": "2026-09-19T20:17:39Z"
+}
