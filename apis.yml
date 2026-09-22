@@ -37,6 +37,9 @@ accessModel:
   generated: '2026-09-17'
   method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
+x-docs-platform: redocly
+x-docs-platform-confidence: high
+x-docs-platform-checked: 2026-09-20
 tags:
 - Banking
 - Belgium
