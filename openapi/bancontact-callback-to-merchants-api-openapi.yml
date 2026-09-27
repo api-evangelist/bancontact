@@ -1,0 +1,196 @@
+openapi: 3.2.0
+info:
+  title: Payment V3 Callback to Merchants API
+  version: 3.6.5
+  description: APIs intended to support the merchant/partner's payment flow on creation, cancellation, search and refunds.
+servers:
+- url: https://merchant.api.preprod.bancontact.net
+  description: PREPROD merchant API
+- url: https://merchant.api.bancontact.net
+  description: PROD merchant API
+security:
+- api_key_payment_profile: []
+tags:
+- name: Callback to Merchants
+paths:
+  /callback:
+    post:
+      responses:
+        '200':
+          description: If sync callback is configured (in the merchant profile), Bancontact Company waits a response from the callback endpoint and a return code of 200 informs Bancontact  Company that the merchant accepts this payment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '422':
+          description: 'If sync callback is configured (in the merchant profile), Bancontact Company waits a response from the callback endpoint and an error code of 4xx or 5xx informs Bancontact Company that the merchant rejects this payment and the status of the payment will be set to FAILED.
+
+
+            This behavior also applies if the merchant callback times out (5 seconds). Bancontact  Company has a retry mechanism so in total Bancontact Company will make 3 calls to confirm the payment with the merchant, in case they time out the payment will  be marked as FAILED'
+      description: 'Each merchant needs to define a specific endpoint to their backend (e.g., https://checkout.company.com/webhook/91FA6EEC30844FAAB5). This endpoint will be called by Bancontact Company with details about the payment. This allows the merchant’s backend to process the data (mark the transaction in database, update the product count number, send email to the customer, etc.). Since webhooks are asynchronous, their order is not guaranteed.
+
+
+        The JSON-formatted POST request contains payment details. Bancontact Company will sign the callback request using a JWS signature (see the specification of the Signature header for more details). In case of no response from the callback endpoint, Bancontact Payconiq Company will call the endpoint again up to three times per payment. The app must verify that:
+
+
+        * Notification messages originated from Bancontact Company
+
+        * Were not altered or corrupted during transmission
+
+        * Are targeted for you
+
+        * Contain a valid signature.'
+      operationId: callback
+      tags:
+      - Callback to Merchants
+      parameters:
+      - in: header
+        name: Signature
+        required: true
+        description: "[Detached JWS signature of response payload](https://tools.ietf.org/html/rfc7797).\n\nBancontact  Company hosts the certificates in [JWK format](https://tools.ietf.org/html/rfc7517) at Bancontact  Company hosts the Public Key in JWK format as JWKS at:\n- https://jwks.bancontact.net/\n- https://jwks.preprod.bancontact.net/\nfor PROD and PREPROD environments respectively.\nThe merchant system should download the certificate in JWK format from the URL specified above and verify the certificate thumbprint present in x5t#S256 JOSE header against the downloaded certificate.\n\nThe signature must be computed as per following instructions:\n\n    jws = base64URLEncode(JOSE Header)..alg(base64URLEncode(JOSE Header).base64URLEncode(Request Body))\n\n    [JOSE Header](https://tools.ietf.org/html/rfc7515#section-4) =\n\n    {\n      \"typ\": \"jose+json\",\n      \"kid\": \"JWK kid\",\n      \"alg\": \"ES256\",\n      \"sub\" : \"{merchantProfileId}\",\n      \"x5t#S256\" : \"[X.509 certificate SHA-256 thumbprint](https://tools.ietf.org/html/rfc7515#section-4.1.8).\",\n      \"https://payconiq.com/iss\" : \"Payconiq\",\n      \"https://payconiq.com/iat\" : \"{Current creation date time in [ISODateTime format](https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/dico/datatypes/_YW1tKtp-Ed-ak6NoX_4Aeg_-1624336183), expressed in UTC time format(YYYY-MM-DDThh:mm:ss.sssZ)},\n      \"https://payconiq.com/jti\" : \"{Unique-request-identifier}\",\n      \"https://payconiq.com/path\": \"request path ex. /v3/payments/{payment-id}/confirm\"\n      \"crit\": [\"https://payconiq.com/iss\", \"https://payconiq.com/iat\", \"https://payconiq.com/jti\", \"https://payconiq.com/path\"]\n    }\n\nJWS Payload will be the same as the request body."
+        schema:
+          type: string
+      - in: header
+        name: User-Agent
+        required: true
+        description: The User-Agent request header contains a characteristic string that allows the network protocol peers to identify the application type, operating system, software vendor or software version of the requesting software user agent.
+        schema:
+          type: string
+          default: Payconiq
+      - in: header
+        name: Content-Type
+        required: true
+        description: The Content-Type entity header is used to indicate the media type of the resource.
+        schema:
+          type: string
+          default: application/json
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/merchant-callback'
+      summary: notify merchants about statuses changes
+      security:
+      - JWS-Request-Signature-Payment: []
+components:
+  schemas:
+    merchant-callback:
+      type: object
+      title: MerchantCallback
+      properties:
+        paymentId:
+          type: string
+          description: Bancontact Company Payment ID
+          minLength: 24
+          maxLength: 24
+          examples:
+          - 5f91483d-78a7-4914-bc6f=
+        currency:
+          type: string
+          default: EUR
+          description: Only EUR is supported currently
+        amount:
+          type: integer
+          description: Requested amount in cents
+          format: int64
+        description:
+          type: string
+          description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
+
+            '
+        reference:
+          type: string
+          description: 'Merchant payment reference, used to reference the Bancontact Company payment in the merchant’s system. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
+
+            '
+          examples:
+          - '19848995'
+        createdAt:
+          type: string
+          format: date-time
+          description: When the payment was created
+        expireAt:
+          type: string
+          format: date-time
+          description: When the payment is going to expire. After that date the payment can't be confirmed anymore
+        succeededAt:
+          type: string
+          format: date-time
+          description: if the payment is SUCCEEDED, then this field represents the date-time on which the payment was SUCCEEDED
+        status:
+          $ref: '#/components/schemas/merchant-payment-status'
+        debtor:
+          type: object
+          description: Customer that paid
+          required:
+          - iban
+          properties:
+            iban:
+              type: string
+              description: Debtor's IBAN masked
+              examples:
+              - '*************12636'
+            name:
+              type: string
+              description: Debtor's first name
+              examples:
+              - John
+      required:
+      - paymentId
+      - totalAmount
+      - currency
+      - amount
+      - createdAt
+      - status
+      - debtor
+    merchant-payment-status:
+      type: string
+      title: MerchantPaymentStatus
+      description: '| Status | Description |
+
+        |--------|-------------|
+
+        | PENDING | The merchant has created the payment and and is pending to proceed with identify step. |
+
+        | IDENTIFIED | The user has scanned the payment''s QR code with the Bancontact Pay. |
+
+        | AUTHORIZED | The user has confirmed the payment and the bank authorized it. |
+
+        | AUTHORIZATION_FAILED | The authorization with the bank failed. |
+
+        | FAILED | Something went wrong during the payment process(e.g authorization failed). |
+
+        | SUCCEEDED | The payment has succeeded. |
+
+        | CANCELLED | When the payment has been canceled after the user has scanned it, or the merchant has cancelled the payment.|
+
+        | EXPIRED | The payment has expired. |
+
+        | PENDING_MERCHANT_ACKNOWLEDGEMENT | The payment is waiting for the merchant to acknowledge. |
+
+        | VOIDED | The payment has been voided |
+
+        '
+      enum:
+      - PENDING
+      - IDENTIFIED
+      - AUTHORIZED
+      - AUTHORIZATION_FAILED
+      - SUCCEEDED
+      - FAILED
+      - CANCELLED
+      - EXPIRED
+      - PENDING_MERCHANT_ACKNOWLEDGEMENT
+      - VOIDED
+  securitySchemes:
+    api_key_payment_profile:
+      type: apiKey
+      in: header
+      description: Bearer authentication with API Key generated by API Manager. Used to get/create payments for a specific Merchant Profile or create refunds for a specific payment.
+      name: Authorization
+    JWS-Request-Signature-Payment:
+      type: apiKey
+      name: Signature
+      in: header
+      description: "[Detached JWS signature of response payload](https://tools.ietf.org/html/rfc7797).\n\nBancontact  Company hosts the certificates in [JWK format](https://tools.ietf.org/html/rfc7517) as [JWKS](https://tools.ietf.org/html/rfc7517#appendix-B) at :\n- https://jwks.bancontact.net/\n- https://jwks.preprod.bancontact.net/\nfor PROD and PREPROD environments respectively.\n\nThe merchant system should download the certificate in JWK format from the URL specified above.\n\nThe signature must be computed as per following instructions:\n\n    jws = base64URLEncode(JOSE Header)..alg(base64URLEncode(JOSE Header).base64URLEncode(Request Body))\n\n    [JOSE Header](https://tools.ietf.org/html/rfc7515#section-4) =\n\n    {\n      \"typ\": \"jose+json\",\n      \"kid\": \"JWK kid\",\n      \"alg\": \"ES256\",\n      \"https://payconiq.com/sub\" : \"{merchantProfileId}\",\n      \"https://payconiq.com/iss\" : \"Payconiq\",\n      \"https://payconiq.com/iat\" : \"{Current creation date time in [ISODateTime format](https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/dico/datatypes/_YW1tKtp-Ed-ak6NoX_4Aeg_-1624336183), expressed in UTC time format(YYYY-MM-DDThh:mm:ss.sssZ)},\n      \"https://payconiq.com/jti\" : \"{Unique-request-identifier}\",\n      \"https://payconiq.com/path\": \"request path ex. /v3/payments/{payment-id}/confirm\"\n      \"crit\": [\"https://payconiq.com/sub\", \"https://payconiq.com/iss\", \"https://payconiq.com/iat\", \"https://payconiq.com/jti\", \"https://payconiq.com/path\"]\n    }\n\nJWS Payload MUST be the same as response body as base64url encoded JSON data."

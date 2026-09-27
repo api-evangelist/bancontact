@@ -1,0 +1,45 @@
+{
+  "provider": "bancontact",
+  "sources": [
+    "_original/merchant-payment.openapi.yaml",
+    "_original/merchant-reconciliation.openapi.yaml",
+    "_original/refund-public.openapi.yaml"
+  ],
+  "outputs": [
+    "bancontact-callback-to-merchants-api-openapi.yml",
+    "bancontact-merchant-acknowledge-api-openapi.yml",
+    "bancontact-merchant-endpoints-api-openapi.yml",
+    "bancontact-refunds-api-openapi.yml",
+    "bancontact-payoutlist-api-openapi.yml",
+    "bancontact-payoutpayments-api-openapi.yml",
+    "bancontact-payoutrefunds-api-openapi.yml",
+    "bancontact-payments-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 3 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (3 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "merchant-payment.openapi.yaml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "merchant-payment.openapi.yaml: declared missing tag: Callback to Merchants",
+    "merchant-payment.openapi.yaml: declared missing tag: Merchant Acknowledge",
+    "merchant-payment.openapi.yaml: declared missing tag: Refunds",
+    "merchant-reconciliation.openapi.yaml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "merchant-reconciliation.openapi.yaml: declared missing tag: payoutList",
+    "merchant-reconciliation.openapi.yaml: declared missing tag: payoutPayments",
+    "merchant-reconciliation.openapi.yaml: declared missing tag: payoutRefunds",
+    "refund-public.openapi.yaml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "refund-public.openapi.yaml: tagged paths POST /v3/payments/{payment-id}/refunds -> Payments",
+    "refund-public.openapi.yaml: tagged paths GET /v3/payments/{payment-id}/refunds/{refund-id} -> Payments",
+    "refund-public.openapi.yaml: declared missing tag: Payments",
+    "superseded outputs removed: bancontact-merchant-reconciliation-api-openapi.yml, bancontact-payment-refund-service-api-openapi.yml, bancontact-payment-v3-api-openapi.yml",
+    "apis.yml register: written (+8 apis, 8 total)"
+  ],
+  "skipped": [
+    "bancontact-merchant-reconciliation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-payment-refund-service-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-payment-v3-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

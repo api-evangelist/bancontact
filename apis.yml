@@ -56,110 +56,222 @@ created: '2025-01-01'
 modified: '2026-09-17'
 specificationVersion: '0.23'
 apis:
-- aid: bancontact:payconiq-acceptance-api
-  name: Bancontact Pro Payment V3 API
-  description: First-party OpenAPI 3.1 contract (v3.6.5) for the Bancontact Pro merchant acceptance service, formerly
-    the Payconiq merchant API. Merchants create dynamic QR / deeplink / checkout payments, static-QR POS payments,
-    search and cancel payments, acknowledge JWS-signed status callbacks, and look up a debtor's refund IBAN. Authenticated
-    with a per-product API key in the Authorization header plus an ES256 detached JWS request signature; served
-    on merchant.api.bancontact.net with a PREPROD twin.
+- aid: bancontact:bancontact-callback-to-merchants-api
+  name: Bancontact Callback to Merchants API
+  description: >-
+    The Callback to Merchants API from Bancontact — 1 operation(s) for callback to merchants.
   humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
   tags:
-  - Checkout
-  - Payments
-  - QR Codes
-  - Transaction
-  - Refunds
-  - Callbacks
-  tags_raw:
-  - Checkout
-  - Payments
-  - QR Code
-  - Transactions
-  - Refunds
-  - Callbacks
+  - Callback to Merchants
   properties:
+  - type: OpenAPI
+    url: openapi/bancontact-callback-to-merchants-api-openapi.yml
   - type: Documentation
     url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
-  - type: OpenAPI
-    url: openapi/bancontact-payment-v3-api-openapi.yml
-  - type: OpenAPI
-    url: https://docs.bancontactpro.com/_bundle/apis/merchant-payment.openapi.yaml
-    name: Provider-published bundle
   - type: Documentation
     url: https://docs.bancontactpro.com/
-    name: Bancontact Pro Developer Portal
-  - type: Overlay
-    url: overlays/bancontact-payment-v3-api-overlay.yaml
   - type: Webhooks
     url: asyncapi/bancontact-callbacks-webhooks.yml
-  baseURL: https://merchant.api.bancontact.net
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
-- aid: bancontact:payment-refund-service-api
-  name: Bancontact Pro Payment Refund Service API
-  description: First-party OpenAPI 3.1 contract (v3.0.3) for creating and retrieving refunds against SUCCEEDED Bancontact
-    Pro payments. Refund creation is idempotent on a required Idempotency-Key header, must be activated per merchant
-    by Bancontact support, and is secured with an ES256 detached JWS request signature; refunds are deducted from
-    the merchant's next bulk payout.
-  humanURL: https://docs.bancontactpro.com/apis/refund-public.openapi
-  baseURL: https://merchant.api.bancontact.net
-  tags:
-  - Refunds
-  - Payments
-  - Idempotency
-  tags_raw:
-  - Refunds
-  - Payments
-  - Idempotency
-  properties:
   - type: Documentation
     url: https://docs.bancontactpro.com/apis/refund-public.openapi
-  - type: OpenAPI
-    url: openapi/bancontact-payment-refund-service-api-openapi.yml
-  - type: OpenAPI
-    url: https://docs.bancontactpro.com/_bundle/apis/refund-public.openapi.yaml
-    name: Provider-published bundle
   - type: Documentation
     url: https://docs.bancontactpro.com/guides/general/refunds052025
-    name: Refunds guide
-  - type: Overlay
-    url: overlays/bancontact-payment-refund-service-api-overlay.yaml
   - type: Idempotency
     url: conventions/bancontact-conventions.yml
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
-- aid: bancontact:merchant-reconciliation-api
-  name: Bancontact Pro Merchant Reconciliation API
-  description: 'First-party OpenAPI 3.1 contract (v3.0.1) for reconciling Bancontact Pro payouts with the payments
-    and refunds they settle: list payouts by date, list SUCCEEDED payments and refunds by payout id or 30-day date
-    range, paged with page/size. Reconciliation data is published D+1 from 09:00 CET in both PREPROD and PROD; requests
-    carry an ES256 detached JWS signature.'
-  humanURL: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
-  baseURL: https://merchant.api.bancontact.net
-  tags:
-  - Reconciliation
-  - Payouts
-  - Payments
-  - Refunds
-  tags_raw:
-  - Reconciliation
-  - Payouts
-  - Payments
-  - Refunds
-  properties:
   - type: Documentation
     url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
-  - type: OpenAPI
-    url: openapi/bancontact-merchant-reconciliation-api-openapi.yml
-  - type: OpenAPI
-    url: https://docs.bancontactpro.com/_bundle/apis/merchant-reconciliation.openapi.yaml
-    name: Provider-published bundle
   - type: Documentation
     url: https://docs.bancontactpro.com/guides/general/reconciliation052025
-    name: Reconciliation guide
-  - type: Overlay
-    url: overlays/bancontact-merchant-reconciliation-api-overlay.yaml
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bancontact.png
+- aid: bancontact:bancontact-merchant-acknowledge-api
+  name: Bancontact Merchant Acknowledge API
+  description: The Merchant Acknowledge API from Bancontact — 1 operation(s) for merchant acknowledge.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - Merchant Acknowledge
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-merchant-acknowledge-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+- aid: bancontact:bancontact-merchant-endpoints-api
+  name: Bancontact Merchant Endpoints API
+  description: The Merchant Endpoints API from Bancontact — 4 operation(s) for merchant endpoints.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - Merchant Endpoints
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-merchant-endpoints-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+- aid: bancontact:bancontact-payments-api
+  name: Bancontact Payments API
+  description: The Payments API from Bancontact — 2 operation(s) for payments.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-payments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+- aid: bancontact:bancontact-payoutlist-api
+  name: Bancontact Payout List API
+  description: The payoutList API from Bancontact — 1 operation(s) for payoutlist.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - payoutList
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-payoutlist-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+- aid: bancontact:bancontact-payoutpayments-api
+  name: Bancontact Payout Payments API
+  description: The payoutPayments API from Bancontact — 1 operation(s) for payoutpayments.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - payoutPayments
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-payoutpayments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+- aid: bancontact:bancontact-payoutrefunds-api
+  name: Bancontact Payout Refunds API
+  description: The payoutRefunds API from Bancontact — 1 operation(s) for payoutrefunds.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - payoutRefunds
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-payoutrefunds-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
+- aid: bancontact:bancontact-refunds-api
+  name: Bancontact Refunds API
+  description: The Refunds API from Bancontact — 1 operation(s) for refunds.
+  humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  baseURL: https://merchant.api.bancontact.net
+  tags:
+  - Refunds
+  properties:
+  - type: OpenAPI
+    url: openapi/bancontact-refunds-api-openapi.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-payment.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/
+  - type: Webhooks
+    url: asyncapi/bancontact-callbacks-webhooks.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/refund-public.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/refunds052025
+  - type: Idempotency
+    url: conventions/bancontact-conventions.yml
+  - type: Documentation
+    url: https://docs.bancontactpro.com/apis/merchant-reconciliation.openapi
+  - type: Documentation
+    url: https://docs.bancontactpro.com/guides/general/reconciliation052025
 common:
+- type: Overlay
+  url: overlays/bancontact-payment-v3-api-overlay.yaml
+- type: Overlay
+  url: overlays/bancontact-payment-refund-service-api-overlay.yaml
+- type: Overlay
+  url: overlays/bancontact-merchant-reconciliation-api-overlay.yaml
 - type: Authentication
   url: authentication/bancontact-authentication.yml
 - type: DomainSecurity
