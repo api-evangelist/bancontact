@@ -409,121 +409,87 @@ paths:
       operationId: create_static_qr_payment
 components:
   schemas:
-    posId:
-      type: string
-      description: Merchant's point of sale identifier
-      maxLength: 36
-      pattern: ^[A-Za-z0-9]+$
-      examples:
-      - POS00001
-    payment_create_request:
+    VoucherEligibleAmount:
       type: object
-      title: PaymentCreateRequest
-      description: Request to initiate/create a payment as a Merchant
+      description: Defines an amount could be payed with proper voucher schemes
+      required:
+      - voucherSchemes
+      - amount
       properties:
+        voucherSchemes:
+          type: array
+          description: List of voucher schemes could be used to pay the amount
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/VoucherScheme'
+        amount:
+          type: integer
+          description: Amount in cents eligible for payment with voucher. EUR 10.13 will be 1013
+          format: int64
+          minimum: 1
+          exclusiveMinimum: 1
+          maximum: 999999999999
+          examples:
+          - 1013
+    payment_create_response:
+      type: object
+      title: PaymentCreateResponse
+      description: Object returned if the payment gets successfully created
+      properties:
+        paymentId:
+          type: string
+          description: Payment ID
+          minLength: 24
+          maxLength: 24
+          examples:
+          - 5f91483d-78a7-4914-bc6f=
+        status:
+          type: string
+          enum:
+          - PENDING
+          description: the status of the payment created
+        createdAt:
+          type: string
+          format: date-time
+          description: the creation time of the payment
+        expiresAt:
+          type: string
+          format: date-time
+          description: the time from which the payment will be expired
+        description:
+          type: string
+          description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best). Only first 35 characters will be used for the remittance info
+
+            '
         reference:
           type: string
           description: 'Merchant payment reference, used to reference the Bancontact Company payment in the merchant''s system. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
 
             '
-          maxLength: 35
           examples:
           - '19848995'
-        bulkId:
-          type: string
-          maxLength: 35
-          description: Field used to reference a bulk batch, so the merchant can inform how the payments should be bulked. If it's not set here it will default to the one configured in the profile.
-          examples:
-          - Bulk-1-200
         amount:
           type: integer
-          description: Amount in cents requested
           format: int64
           minimum: 1
           exclusiveMinimum: 1
           maximum: 999999999999
+          description: Amount in cents requested
         currency:
           $ref: '#/components/schemas/currency'
-        description:
-          type: string
-          description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
-
-            '
-          maxLength: 140
-        identifyCallbackUrl:
-          type: string
-          description: Callback url to which merchants will be notified about the payment identification. If it's not set here it will default to the one configured in the profile
-          pattern: ^https:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$
-          minLength: 1
-          maxLength: 2048
-          examples:
-          - https://api.merchant.bancontact.net/identify
-        callbackUrl:
-          type: string
-          description: callbackUrl to which the merchant will be notified about the payment payout. If it's not set here it will default to the one set in the profile
-          pattern: ^https:\/\/([a-zA-Z0-9-:]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$
-          minLength: 1
-          maxLength: 2048
-          examples:
-          - https://api.merchant.bancontact.net/payment
-        returnUrl:
-          type: string
-          description: Merchant return url to which the dynamic payment page will redirect after the payment is completed
-          minLength: 1
-          maxLength: 2048
-          pattern: ^https:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$
-          examples:
-          - https://api.merchant.bancontact.net/payment
-        voucherEligibility:
-          deprecated: true
-          type: array
-          description: List of Value Added Services (vouchers) eligible amounts within the payment
-          items:
-            $ref: '#/components/schemas/VoucherEligibleAmount'
+        creditor:
+          $ref: '#/components/schemas/payment_creditor_response'
+        _links:
+          $ref: '#/components/schemas/links'
       required:
+      - paymentId
+      - status
+      - createdAt
+      - expiresAt
       - amount
-    bulkId:
-      type: string
-      maxLength: 35
-      description: Field used to reference a bulk batch, so the merchant can inform how the payments should be bulked. If it's not set here it will default to the one configured in the profile.
-      examples:
-      - Bulk-1-200
-    payment-search-query:
-      type: object
-      title: PaymentSearchQuery
-      properties:
-        from:
-          type: string
-          format: date-time
-          description: default is today - 1day (yesterday)
-        to:
-          type: string
-          format: date-time
-        paymentStatuses:
-          type: array
-          items:
-            $ref: '#/components/schemas/merchant-payment-status'
-        reference:
-          type: string
-          description: 'Merchant payment reference, used to reference Bancontact Company payment in merchant system. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
-
-            '
-          examples:
-          - '19848995'
-    shopId:
-      type: string
-      description: Id of the shop, where payment is created
-      maxLength: 36
-      examples:
-      - 3418e946-ef71-41ef-ad56-c41421c1e079
-    link:
-      type: object
-      title: Link
-      properties:
-        href:
-          type: string
-      required:
-      - href
+      - currency
+      - creditor
+      - _links
     currency:
       type: string
       title: Currency
@@ -531,6 +497,21 @@ components:
       enum:
       - EUR
       default: EUR
+    bulkId:
+      type: string
+      maxLength: 35
+      description: Field used to reference a bulk batch, so the merchant can inform how the payments should be bulked. If it's not set here it will default to the one configured in the profile.
+      examples:
+      - Bulk-1-200
+    PaymentSearchResponse:
+      allOf:
+      - $ref: '#/components/schemas/AbstractListResponsePayment'
+      - type: object
+        properties:
+          details:
+            type: array
+            items:
+              $ref: '#/components/schemas/get_payment_response'
     AbstractListResponsePayment:
       type: object
       properties:
@@ -554,217 +535,12 @@ components:
       - totalPages
       - totalElements
       - number
-    payment_creditor_response:
-      type: object
-      title: PaymentCreditorResponse
-      description: Creditor account set to receive the payment
-      properties:
-        profileId:
-          type: string
-          description: The configuration ID of the Merchant
-          examples:
-          - 07e998f9-d932-4848-8b60-d5b5ae94b1b2
-        merchantId:
-          type: string
-          description: the Id of the merchant
-          examples:
-          - dee718bb-3b6d-4312-9404-3d63d14529cc
-        name:
-          type: string
-          description: Merchant's company name that will be shown to the debtor
-          examples:
-          - John
-        iban:
-          type: string
-          description: Creditor's Bank Account Iban to where the money will be sent to for this current payment
-          examples:
-          - BE12 3456 7890 1234
-        identifyCallbackUrl:
-          type: string
-          description: callbackUrl to which the merchant will be notified about the payment identification
-          examples:
-          - https://api.merchant.bancontact.net/identify
-        callbackUrl:
-          type: string
-          description: callbackUrl to which the merchant will be notified about the payment payout
-          examples:
-          - https://api.merchant.bancontact.net/payment
-    payment_reference:
+    shopId:
       type: string
-      description: Partner payment reference, used to reference the Bancontact Company payment in the partner's system
-      maxLength: 35
-      examples:
-      - '19848995'
-    links:
-      type: object
-      title: Links
-      description: Provides information to navigate to our REST interfaces dynamically, by including hypermedia links to them. Note that for some links inclusion depends on the status of the payment (e.g. cancel link will be available on PENDING and refund on SUCCEEDED)
-      properties:
-        self:
-          $ref: '#/components/schemas/link'
-          examples:
-          - https://api.merchant.bancontact.net/5f91483d-78a7-4914-bc6f=
-        deeplink:
-          $ref: '#/components/schemas/link'
-          examples:
-          - https://payconiq.com/pay/2/5f91483d-78a7-4914-bc6f=
-        qrcode:
-          $ref: '#/components/schemas/link'
-          examples:
-          - https://qrcodegenerator.api.bancontact.net/qrcode?c=https%3A%2F%2Fpayconiq.com%2Fpay%2F2%2F5f91483d-78a7-4914-bc6f=
-        cancel:
-          $ref: '#/components/schemas/link'
-          examples:
-          - https://api.merchant.bancontact.net/5f91483d-78a7-4914-bc6f=
-        refund:
-          $ref: '#/components/schemas/link'
-          examples:
-          - https://merchant.api.bancontact.net/payments/5f91483d-78a7-4914-bc6f=/refunds
-        checkout:
-          $ref: '#/components/schemas/link'
-          examples:
-          - https://checkout.example.com?paymentId=12345&timestamp=1700000000000&token=abcdef1234567890
-      required:
-      - self
-      - deeplink
-      - qrcode
-    merchant-payment-status:
-      type: string
-      title: MerchantPaymentStatus
-      description: '| Status | Description |
-
-        |--------|-------------|
-
-        | PENDING | The merchant has created the payment and and is pending to proceed with identify step. |
-
-        | IDENTIFIED | The user has scanned the payment''s QR code with the Bancontact Pay. |
-
-        | AUTHORIZED | The user has confirmed the payment and the bank authorized it. |
-
-        | AUTHORIZATION_FAILED | The authorization with the bank failed. |
-
-        | FAILED | Something went wrong during the payment process(e.g authorization failed). |
-
-        | SUCCEEDED | The payment has succeeded. |
-
-        | CANCELLED | When the payment has been canceled after the user has scanned it, or the merchant has cancelled the payment.|
-
-        | EXPIRED | The payment has expired. |
-
-        | PENDING_MERCHANT_ACKNOWLEDGEMENT | The payment is waiting for the merchant to acknowledge. |
-
-        | VOIDED | The payment has been voided |
-
-        '
-      enum:
-      - PENDING
-      - IDENTIFIED
-      - AUTHORIZED
-      - AUTHORIZATION_FAILED
-      - SUCCEEDED
-      - FAILED
-      - CANCELLED
-      - EXPIRED
-      - PENDING_MERCHANT_ACKNOWLEDGEMENT
-      - VOIDED
-    payment_description:
-      type: string
-      description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
-
-        '
-      maxLength: 140
-    VoucherScheme:
-      type: string
-      description: "Voucher scheme (voucher type), has the form [alpha-3-country-code]_[identifier]\ncurrently known values:\n  - BEL_MEAL_VOUCHER\n  - BEL_ECO_VOUCHER\n  - BEL_GIFT_VOUCHER\n  - BEL_COVID_VOUCHER\n  - BEL_SPORT_VOUCHER\n  - BEL_CONSUMPTION_VOUCHER\n\nThe api should allow for new schemes, providers and categories without having to upgrade all the services/apps\nusing this API. Because most services will use the java api artifact for this (which will 'close' any enums\ndefined in an openapi spec), the values above are not encoded explicitly as enums.\nThe 400 error response will report any invalid values for the scheme and providers.\n"
-      examples:
-      - BEL_MEAL_VOUCHER
-      minLength: 1
+      description: Id of the shop, where payment is created
       maxLength: 36
-      pattern: ^[A-Z]{3}_[A-Z_]+$
-    PaymentSearchResponse:
-      allOf:
-      - $ref: '#/components/schemas/AbstractListResponsePayment'
-      - type: object
-        properties:
-          details:
-            type: array
-            items:
-              $ref: '#/components/schemas/get_payment_response'
-    static_qr_payment_create_request:
-      type: object
-      title: StaticQRPaymentCreateRequest
-      description: Request to initiate/create a static qr payment as a Merchant
-      properties:
-        reference:
-          $ref: '#/components/schemas/payment_reference'
-        bulkId:
-          $ref: '#/components/schemas/bulkId'
-        amount:
-          type: integer
-          description: Amount in cents requested
-          format: int64
-          minimum: 1
-          exclusiveMinimum: 1
-          maximum: 999999999999
-        currency:
-          $ref: '#/components/schemas/currency'
-        description:
-          $ref: '#/components/schemas/payment_description'
-        posId:
-          $ref: '#/components/schemas/posId'
-        shopId:
-          $ref: '#/components/schemas/shopId'
-        shopName:
-          type: string
-          description: Name of the shop, where payment is created. This name will be shown to the user during payment, but will be truncated in the remittance info, if longer than 23 characters.
-          examples:
-          - Bun café
-          maxLength: 36
-        identifyCallbackUrl:
-          type: string
-          description: Callback url to which merchants will be notified about the payment identification. If it's not set here it will default to the one configured in the profile
-          minLength: 1
-          maxLength: 2048
-          examples:
-          - https://api.merchant.bancontact.net/identify
-        callbackUrl:
-          type: string
-          description: Callback url to which the merchant will be notified about the payment payout/cancel. If it's not set here it will default to the one set in the profile
-          minLength: 1
-          maxLength: 2048
-          examples:
-          - https://api.merchant.bancontact.net/payment
-        voucherEligibility:
-          deprecated: true
-          type: array
-          description: List of Value Added Services (vouchers) eligible amounts within the payment
-          items:
-            $ref: '#/components/schemas/VoucherEligibleAmount'
-      required:
-      - amount
-      - posId
-    VoucherEligibleAmount:
-      type: object
-      description: Defines an amount could be payed with proper voucher schemes
-      required:
-      - voucherSchemes
-      - amount
-      properties:
-        voucherSchemes:
-          type: array
-          description: List of voucher schemes could be used to pay the amount
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/VoucherScheme'
-        amount:
-          type: integer
-          description: Amount in cents eligible for payment with voucher. EUR 10.13 will be 1013
-          format: int64
-          minimum: 1
-          exclusiveMinimum: 1
-          maximum: 999999999999
-          examples:
-          - 1013
+      examples:
+      - 3418e946-ef71-41ef-ad56-c41421c1e079
     get_payment_response:
       type: object
       title: GetPaymentResponse
@@ -867,65 +643,289 @@ components:
       - message
       - traceId
       - spanId
-    payment_create_response:
+    static_qr_payment_create_request:
       type: object
-      title: PaymentCreateResponse
-      description: Object returned if the payment gets successfully created
+      title: StaticQRPaymentCreateRequest
+      description: Request to initiate/create a static qr payment as a Merchant
       properties:
-        paymentId:
-          type: string
-          description: Payment ID
-          minLength: 24
-          maxLength: 24
-          examples:
-          - 5f91483d-78a7-4914-bc6f=
-        status:
-          type: string
-          enum:
-          - PENDING
-          description: the status of the payment created
-        createdAt:
-          type: string
-          format: date-time
-          description: the creation time of the payment
-        expiresAt:
-          type: string
-          format: date-time
-          description: the time from which the payment will be expired
+        reference:
+          $ref: '#/components/schemas/payment_reference'
+        bulkId:
+          $ref: '#/components/schemas/bulkId'
+        amount:
+          type: integer
+          description: Amount in cents requested
+          format: int64
+          minimum: 1
+          exclusiveMinimum: 1
+          maximum: 999999999999
+        currency:
+          $ref: '#/components/schemas/currency'
         description:
+          $ref: '#/components/schemas/payment_description'
+        posId:
+          $ref: '#/components/schemas/posId'
+        shopId:
+          $ref: '#/components/schemas/shopId'
+        shopName:
           type: string
-          description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best). Only first 35 characters will be used for the remittance info
+          description: Name of the shop, where payment is created. This name will be shown to the user during payment, but will be truncated in the remittance info, if longer than 23 characters.
+          examples:
+          - Bun café
+          maxLength: 36
+        identifyCallbackUrl:
+          type: string
+          description: Callback url to which merchants will be notified about the payment identification. If it's not set here it will default to the one configured in the profile
+          minLength: 1
+          maxLength: 2048
+          examples:
+          - https://api.merchant.bancontact.net/identify
+        callbackUrl:
+          type: string
+          description: Callback url to which the merchant will be notified about the payment payout/cancel. If it's not set here it will default to the one set in the profile
+          minLength: 1
+          maxLength: 2048
+          examples:
+          - https://api.merchant.bancontact.net/payment
+        voucherEligibility:
+          deprecated: true
+          type: array
+          description: List of Value Added Services (vouchers) eligible amounts within the payment
+          items:
+            $ref: '#/components/schemas/VoucherEligibleAmount'
+      required:
+      - amount
+      - posId
+    merchant-payment-status:
+      type: string
+      title: MerchantPaymentStatus
+      description: '| Status | Description |
+
+        |--------|-------------|
+
+        | PENDING | The merchant has created the payment and and is pending to proceed with identify step. |
+
+        | IDENTIFIED | The user has scanned the payment''s QR code with the Bancontact Pay. |
+
+        | AUTHORIZED | The user has confirmed the payment and the bank authorized it. |
+
+        | AUTHORIZATION_FAILED | The authorization with the bank failed. |
+
+        | FAILED | Something went wrong during the payment process(e.g authorization failed). |
+
+        | SUCCEEDED | The payment has succeeded. |
+
+        | CANCELLED | When the payment has been canceled after the user has scanned it, or the merchant has cancelled the payment.|
+
+        | EXPIRED | The payment has expired. |
+
+        | PENDING_MERCHANT_ACKNOWLEDGEMENT | The payment is waiting for the merchant to acknowledge. |
+
+        | VOIDED | The payment has been voided |
+
+        '
+      enum:
+      - PENDING
+      - IDENTIFIED
+      - AUTHORIZED
+      - AUTHORIZATION_FAILED
+      - SUCCEEDED
+      - FAILED
+      - CANCELLED
+      - EXPIRED
+      - PENDING_MERCHANT_ACKNOWLEDGEMENT
+      - VOIDED
+    link:
+      type: object
+      title: Link
+      properties:
+        href:
+          type: string
+      required:
+      - href
+    VoucherScheme:
+      type: string
+      description: "Voucher scheme (voucher type), has the form [alpha-3-country-code]_[identifier]\ncurrently known values:\n  - BEL_MEAL_VOUCHER\n  - BEL_ECO_VOUCHER\n  - BEL_GIFT_VOUCHER\n  - BEL_COVID_VOUCHER\n  - BEL_SPORT_VOUCHER\n  - BEL_CONSUMPTION_VOUCHER\n\nThe api should allow for new schemes, providers and categories without having to upgrade all the services/apps\nusing this API. Because most services will use the java api artifact for this (which will 'close' any enums\ndefined in an openapi spec), the values above are not encoded explicitly as enums.\nThe 400 error response will report any invalid values for the scheme and providers.\n"
+      examples:
+      - BEL_MEAL_VOUCHER
+      minLength: 1
+      maxLength: 36
+      pattern: ^[A-Z]{3}_[A-Z_]+$
+    payment_reference:
+      type: string
+      description: Partner payment reference, used to reference the Bancontact Company payment in the partner's system
+      maxLength: 35
+      examples:
+      - '19848995'
+    payment-search-query:
+      type: object
+      title: PaymentSearchQuery
+      properties:
+        from:
+          type: string
+          format: date-time
+          description: default is today - 1day (yesterday)
+        to:
+          type: string
+          format: date-time
+        paymentStatuses:
+          type: array
+          items:
+            $ref: '#/components/schemas/merchant-payment-status'
+        reference:
+          type: string
+          description: 'Merchant payment reference, used to reference Bancontact Company payment in merchant system. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
 
             '
+          examples:
+          - '19848995'
+    payment_creditor_response:
+      type: object
+      title: PaymentCreditorResponse
+      description: Creditor account set to receive the payment
+      properties:
+        profileId:
+          type: string
+          description: The configuration ID of the Merchant
+          examples:
+          - 07e998f9-d932-4848-8b60-d5b5ae94b1b2
+        merchantId:
+          type: string
+          description: the Id of the merchant
+          examples:
+          - dee718bb-3b6d-4312-9404-3d63d14529cc
+        name:
+          type: string
+          description: Merchant's company name that will be shown to the debtor
+          examples:
+          - John
+        iban:
+          type: string
+          description: Creditor's Bank Account Iban to where the money will be sent to for this current payment
+          examples:
+          - BE12 3456 7890 1234
+        identifyCallbackUrl:
+          type: string
+          description: callbackUrl to which the merchant will be notified about the payment identification
+          examples:
+          - https://api.merchant.bancontact.net/identify
+        callbackUrl:
+          type: string
+          description: callbackUrl to which the merchant will be notified about the payment payout
+          examples:
+          - https://api.merchant.bancontact.net/payment
+    posId:
+      type: string
+      description: Merchant's point of sale identifier
+      maxLength: 36
+      pattern: ^[A-Za-z0-9]+$
+      examples:
+      - POS00001
+    links:
+      type: object
+      title: Links
+      description: Provides information to navigate to our REST interfaces dynamically, by including hypermedia links to them. Note that for some links inclusion depends on the status of the payment (e.g. cancel link will be available on PENDING and refund on SUCCEEDED)
+      properties:
+        self:
+          $ref: '#/components/schemas/link'
+          examples:
+          - https://api.merchant.bancontact.net/5f91483d-78a7-4914-bc6f=
+        deeplink:
+          $ref: '#/components/schemas/link'
+          examples:
+          - https://payconiq.com/pay/2/5f91483d-78a7-4914-bc6f=
+        qrcode:
+          $ref: '#/components/schemas/link'
+          examples:
+          - https://qrcodegenerator.api.bancontact.net/qrcode?c=https%3A%2F%2Fpayconiq.com%2Fpay%2F2%2F5f91483d-78a7-4914-bc6f=
+        cancel:
+          $ref: '#/components/schemas/link'
+          examples:
+          - https://api.merchant.bancontact.net/5f91483d-78a7-4914-bc6f=
+        refund:
+          $ref: '#/components/schemas/link'
+          examples:
+          - https://merchant.api.bancontact.net/payments/5f91483d-78a7-4914-bc6f=/refunds
+        checkout:
+          $ref: '#/components/schemas/link'
+          examples:
+          - https://checkout.example.com?paymentId=12345&timestamp=1700000000000&token=abcdef1234567890
+      required:
+      - self
+      - deeplink
+      - qrcode
+    payment_description:
+      type: string
+      description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
+
+        '
+      maxLength: 140
+    payment_create_request:
+      type: object
+      title: PaymentCreateRequest
+      description: Request to initiate/create a payment as a Merchant
+      properties:
         reference:
           type: string
           description: 'Merchant payment reference, used to reference the Bancontact Company payment in the merchant''s system. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
 
             '
+          maxLength: 35
           examples:
           - '19848995'
+        bulkId:
+          type: string
+          maxLength: 35
+          description: Field used to reference a bulk batch, so the merchant can inform how the payments should be bulked. If it's not set here it will default to the one configured in the profile.
+          examples:
+          - Bulk-1-200
         amount:
           type: integer
+          description: Amount in cents requested
           format: int64
           minimum: 1
           exclusiveMinimum: 1
           maximum: 999999999999
-          description: Amount in cents requested
         currency:
           $ref: '#/components/schemas/currency'
-        creditor:
-          $ref: '#/components/schemas/payment_creditor_response'
-        _links:
-          $ref: '#/components/schemas/links'
+        description:
+          type: string
+          description: 'Description of the payment that will be shown to the debtor, also used in the bank statement for reconciliation purposes. The characters used must comply with the [SEPA Requirements for an Extended Character Set (UNICODE Subset) - Best Practices | European Payments Council](https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/sepa-requirements-extended-character-set-unicode-subset-best).
+
+            '
+          maxLength: 140
+        identifyCallbackUrl:
+          type: string
+          description: Callback url to which merchants will be notified about the payment identification. If it's not set here it will default to the one configured in the profile
+          pattern: ^https:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$
+          minLength: 1
+          maxLength: 2048
+          examples:
+          - https://api.merchant.bancontact.net/identify
+        callbackUrl:
+          type: string
+          description: callbackUrl to which the merchant will be notified about the payment payout. If it's not set here it will default to the one set in the profile
+          pattern: ^https:\/\/([a-zA-Z0-9-:]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$
+          minLength: 1
+          maxLength: 2048
+          examples:
+          - https://api.merchant.bancontact.net/payment
+        returnUrl:
+          type: string
+          description: Merchant return url to which the dynamic payment page will redirect after the payment is completed
+          minLength: 1
+          maxLength: 2048
+          pattern: ^https:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?$
+          examples:
+          - https://api.merchant.bancontact.net/payment
+        voucherEligibility:
+          deprecated: true
+          type: array
+          description: List of Value Added Services (vouchers) eligible amounts within the payment
+          items:
+            $ref: '#/components/schemas/VoucherEligibleAmount'
       required:
-      - paymentId
-      - status
-      - createdAt
-      - expiresAt
       - amount
-      - currency
-      - creditor
-      - _links
   securitySchemes:
     api_key_payment_profile:
       type: apiKey

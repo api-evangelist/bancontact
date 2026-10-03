@@ -15,9 +15,7 @@
     "bancontact-payoutrefunds-api-openapi.yml",
     "bancontact-payments-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 3 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -34,12 +32,16 @@
     "refund-public.openapi.yaml: tagged paths POST /v3/payments/{payment-id}/refunds -> Payments",
     "refund-public.openapi.yaml: tagged paths GET /v3/payments/{payment-id}/refunds/{refund-id} -> Payments",
     "refund-public.openapi.yaml: declared missing tag: Payments",
-    "superseded outputs removed: bancontact-merchant-reconciliation-api-openapi.yml, bancontact-payment-refund-service-api-openapi.yml, bancontact-payment-v3-api-openapi.yml",
-    "apis.yml register: written (+8 apis, 8 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
-    "bancontact-merchant-reconciliation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "bancontact-payment-refund-service-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "bancontact-payment-v3-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+    "bancontact-callback-to-merchants-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-merchant-acknowledge-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-merchant-endpoints-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-payments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-payoutlist-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-payoutpayments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-payoutrefunds-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bancontact-refunds-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }

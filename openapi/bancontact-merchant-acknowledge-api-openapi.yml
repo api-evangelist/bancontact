@@ -121,13 +121,6 @@ components:
       - message
       - traceId
       - spanId
-    payment_amount:
-      type: integer
-      format: int64
-      minimum: 1
-      exclusiveMinimum: 1
-      maximum: 999999999999
-      description: Amount in cents requested
     currency:
       type: string
       title: Currency
@@ -135,6 +128,13 @@ components:
       enum:
       - EUR
       default: EUR
+    payment_amount:
+      type: integer
+      format: int64
+      minimum: 1
+      exclusiveMinimum: 1
+      maximum: 999999999999
+      description: Amount in cents requested
     merchant-acknowledge:
       type: object
       title: MerchantAcknowledge
