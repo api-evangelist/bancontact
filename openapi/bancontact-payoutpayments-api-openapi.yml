@@ -76,7 +76,64 @@ paths:
         '503':
           $ref: '#/components/responses/503ServiceUnavailable'
 components:
+  responses:
+    403ForbiddenReconciliation:
+      description: 'Error codes:
+
+        * _ACCESS_DENIED_ - operation not allowed, caller doesn''t have required authorities'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        Signature:
+          $ref: '#/components/headers/Signature'
+    500InternalServerErrorReconciliation:
+      description: 'Error codes:
+
+        * _TECHNICAL_ERROR_ - technical error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        Signature:
+          $ref: '#/components/headers/Signature'
+    400BadRequest:
+      description: 'Error codes:
+
+        * _BAD_REQUEST_ - some field in the request was not formatted correctly'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        Signature:
+          $ref: '#/components/headers/Signature'
+    401UnauthorizedReconciliation:
+      description: 'If JWS signature is not valid. Error codes:
+
+        * _UNAUTHORIZED_ - caller doesn''t have valid authentication credentials'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        Signature:
+          $ref: '#/components/headers/Signature'
+    503ServiceUnavailable:
+      description: Service is unavailable
   parameters:
+    endDate:
+      name: end-date
+      in: query
+      description: The end date (inclusive) in yyyy-MM-dd format for which the list of payments/refunds should be returned. The maximum difference between the start date and end date can be 30 days. When the end date is filled the start date needs to be filled as well.
+      schema:
+        type: string
+        format: date
+        examples:
+        - '2020-06-18'
+      required: false
     PayoutId:
       in: query
       name: payout-id
@@ -96,6 +153,15 @@ components:
         maximum: 10000
         default: 10000
       required: false
+    page:
+      name: page
+      in: query
+      description: zero-based page index in list requests.
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      required: false
     startDate:
       name: start-date
       in: query
@@ -106,26 +172,25 @@ components:
         examples:
         - '2020-06-18'
       required: false
-    page:
-      name: page
-      in: query
-      description: zero-based page index in list requests.
-      schema:
-        type: integer
-        minimum: 0
-        default: 0
-      required: false
-    endDate:
-      name: end-date
-      in: query
-      description: The end date (inclusive) in yyyy-MM-dd format for which the list of payments/refunds should be returned. The maximum difference between the start date and end date can be 30 days. When the end date is filled the start date needs to be filled as well.
+  headers:
+    Signature:
+      description: "[Detached JWS signature of response payload](https://tools.ietf.org/html/rfc7797).\nBancontact Payconiq Company hosts the Public Key in [JWK format](https://tools.ietf.org/html/rfc7517) as [JWKS](https://tools.ietf.org/html/rfc7517#section-3) at:\n- https://jwks.bancontact.net/\n- https://jwks.preprod.bancontact.net/\nfor PROD and PREPROD environments respectively.\nMerchants should use the Public key downloaded from this url identified by kid claim in JOSE header.\nBancontact Payconiq Company will use the same algorithm to sign the response as the one used for request signature\nThe signature must be computed as per following instructions:\n\n    jws = base64URLEncode(JOSE Header)..alg(base64URLEncode(JOSE Header).base64URLEncode(Response Body))\n\n    [JOSE Header](https://tools.ietf.org/html/rfc7515#section-4) =\n\n    {\n      \"typ\": \"jose+json\",\n      \"kid\": \"JWK kid\",\n      \"alg\": \"[ES256(ECDSA using P-256 and SHA-256. Minimum keysize 256 bit)](https://tools.ietf.org/html/rfc7518#section-3.1)\",\n      \"https://payconiq.com/sub\" : \"{merchantProfileId}\",\n      \"https://payconiq.com/iss\" : \"Payconiq\",\n      \"https://payconiq.com/iat\" : \"{Current creation date time in [ISODateTime format](https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/dico/datatypes/_YW1tKtp-Ed-ak6NoX_4Aeg_-1624336183), expressed in UTC time format(YYYY-MM-DDThh:mm:ss.sssZ)},\n      \"https://payconiq.com/jti\" : \"{X-Request-ID}\",\n      \"https://payconiq.com/path\": \"request path eg. /bag/v1/payments/{payment-id}/authorization/{authorization-id}/confirm\"\n      \"crit\": [\"https://payconiq.com/sub\", \"https://payconiq.com/iss\", \"https://payconiq.com/iat\", \"https://payconiq.com/jti\", \"https://payconiq.com/path\"]\n    }\n\nJWS Payload MUST be same as the response body as base64url encoded JSON data."
       schema:
         type: string
-        format: date
-        examples:
-        - '2020-06-18'
-      required: false
   schemas:
+    PayoutPaymentsResponse:
+      description: list of payments associated with a payout
+      allOf:
+      - $ref: '#/components/schemas/AbstractListResponse'
+      - type: object
+        required:
+        - payments
+        properties:
+          payments:
+            type: array
+            description: a list of payments included in the payout.
+            items:
+              $ref: '#/components/schemas/PaymentDetails'
     PaymentDetails:
       description: Details of a payment
       allOf:
@@ -152,6 +217,27 @@ components:
         number:
           type: integer
           description: the current page number
+    PaymentChannel:
+      type: string
+      enum:
+      - ONLINE
+      - INSTORE
+      - INVOICE
+      description: '"The  channel of the payment"'
+    ErrorResponse:
+      type: object
+      title: Error response
+      description: The standard response model returned in case of an error
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+      required:
+      - code
+      - message
     TransactionDetails:
       type: object
       description: The details of a transaction
@@ -204,98 +290,12 @@ components:
           type: string
           format: date-time
           description: timestamp, when transaction was created in UTC
-    PaymentChannel:
-      type: string
-      enum:
-      - ONLINE
-      - INSTORE
-      - INVOICE
-      description: '"The  channel of the payment"'
-    PayoutPaymentsResponse:
-      description: list of payments associated with a payout
-      allOf:
-      - $ref: '#/components/schemas/AbstractListResponse'
-      - type: object
-        required:
-        - payments
-        properties:
-          payments:
-            type: array
-            description: a list of payments included in the payout.
-            items:
-              $ref: '#/components/schemas/PaymentDetails'
     Currency:
       type: string
       enum:
       - EUR
       default: EUR
       description: currency code. Only EUR is supported [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217)
-    ErrorResponse:
-      type: object
-      title: Error response
-      description: The standard response model returned in case of an error
-      properties:
-        code:
-          type: string
-          description: Error code
-        message:
-          type: string
-          description: Error message
-      required:
-      - code
-      - message
-  responses:
-    403ForbiddenReconciliation:
-      description: 'Error codes:
-
-        * _ACCESS_DENIED_ - operation not allowed, caller doesn''t have required authorities'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        Signature:
-          $ref: '#/components/headers/Signature'
-    503ServiceUnavailable:
-      description: Service is unavailable
-    500InternalServerErrorReconciliation:
-      description: 'Error codes:
-
-        * _TECHNICAL_ERROR_ - technical error'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        Signature:
-          $ref: '#/components/headers/Signature'
-    401UnauthorizedReconciliation:
-      description: 'If JWS signature is not valid. Error codes:
-
-        * _UNAUTHORIZED_ - caller doesn''t have valid authentication credentials'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        Signature:
-          $ref: '#/components/headers/Signature'
-    400BadRequest:
-      description: 'Error codes:
-
-        * _BAD_REQUEST_ - some field in the request was not formatted correctly'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        Signature:
-          $ref: '#/components/headers/Signature'
-  headers:
-    Signature:
-      description: "[Detached JWS signature of response payload](https://tools.ietf.org/html/rfc7797).\nBancontact Payconiq Company hosts the Public Key in [JWK format](https://tools.ietf.org/html/rfc7517) as [JWKS](https://tools.ietf.org/html/rfc7517#section-3) at:\n- https://jwks.bancontact.net/\n- https://jwks.preprod.bancontact.net/\nfor PROD and PREPROD environments respectively.\nMerchants should use the Public key downloaded from this url identified by kid claim in JOSE header.\nBancontact Payconiq Company will use the same algorithm to sign the response as the one used for request signature\nThe signature must be computed as per following instructions:\n\n    jws = base64URLEncode(JOSE Header)..alg(base64URLEncode(JOSE Header).base64URLEncode(Response Body))\n\n    [JOSE Header](https://tools.ietf.org/html/rfc7515#section-4) =\n\n    {\n      \"typ\": \"jose+json\",\n      \"kid\": \"JWK kid\",\n      \"alg\": \"[ES256(ECDSA using P-256 and SHA-256. Minimum keysize 256 bit)](https://tools.ietf.org/html/rfc7518#section-3.1)\",\n      \"https://payconiq.com/sub\" : \"{merchantProfileId}\",\n      \"https://payconiq.com/iss\" : \"Payconiq\",\n      \"https://payconiq.com/iat\" : \"{Current creation date time in [ISODateTime format](https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/dico/datatypes/_YW1tKtp-Ed-ak6NoX_4Aeg_-1624336183), expressed in UTC time format(YYYY-MM-DDThh:mm:ss.sssZ)},\n      \"https://payconiq.com/jti\" : \"{X-Request-ID}\",\n      \"https://payconiq.com/path\": \"request path eg. /bag/v1/payments/{payment-id}/authorization/{authorization-id}/confirm\"\n      \"crit\": [\"https://payconiq.com/sub\", \"https://payconiq.com/iss\", \"https://payconiq.com/iat\", \"https://payconiq.com/jti\", \"https://payconiq.com/path\"]\n    }\n\nJWS Payload MUST be same as the response body as base64url encoded JSON data."
-      schema:
-        type: string
   securitySchemes:
     JWS-Request-Signature:
       name: Signature

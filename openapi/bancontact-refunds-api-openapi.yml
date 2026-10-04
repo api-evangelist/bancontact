@@ -95,6 +95,17 @@ paths:
       summary: get debtor's refund IBAN
 components:
   schemas:
+    refund-response:
+      type: object
+      title: RefundResponse
+      properties:
+        iban:
+          type: string
+          description: Debtor's IBAN
+          examples:
+          - BE12 3456 7890 1234
+      required:
+      - iban
     error:
       type: object
       description: error response received from server
@@ -117,17 +128,6 @@ components:
       - message
       - traceId
       - spanId
-    refund-response:
-      type: object
-      title: RefundResponse
-      properties:
-        iban:
-          type: string
-          description: Debtor's IBAN
-          examples:
-          - BE12 3456 7890 1234
-      required:
-      - iban
   securitySchemes:
     api_key_payment_profile:
       type: apiKey

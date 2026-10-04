@@ -136,53 +136,6 @@ paths:
       tags:
       - Payments
 components:
-  responses:
-    403Forbidden:
-      description: 'Error codes:
-
-        * _ACCESS_DENIED_ - operation not allowed, caller doesn''t have required authorities'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        SignatureBank:
-          $ref: '#/components/headers/SignatureBank'
-    500InternalServerError:
-      description: 'Error codes:
-
-        * _TECHNICAL_ERROR_ - technical error'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        SignatureBank:
-          $ref: '#/components/headers/SignatureBank'
-    503ServiceUnavailable:
-      description: Service is unavailable
-    401Unauthorized:
-      description: 'If JWS signature is not valid. Error codes:
-
-        * _UNAUTHORIZED_ - caller doesn''t have valid authentication credentials'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        SignatureBank:
-          $ref: '#/components/headers/SignatureBank'
-    400InputError:
-      description: 'Error codes:
-
-        * _VALIDATION_ERROR_ - request validation failed'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-      headers:
-        SignatureBank:
-          $ref: '#/components/headers/SignatureBank'
   parameters:
     RefundId:
       in: path
@@ -210,26 +163,95 @@ components:
         minLength: 24
         maxLength: 24
       required: true
+  headers:
+    SignatureBank:
+      description: "[Detached JWS signature of response payload](https://tools.ietf.org/html/rfc7797).\nBancontact Company hosts the Public Key in [JWK format](https://tools.ietf.org/html/rfc7517) as [JWKS](https://tools.ietf.org/html/rfc7517#section-3) at:\n- https://jwks.bancontact.net/\n- https://jwks.preprod.bancontact.net/\nfor PROD and PREPROD environments respectively.\nThe Public Key should be downloaded from these URLs and identified by the 'kid' claim in the JOSE header.\nBancontact Company will use the same algorithm to sign the response as the one used for the request signature.\nThe signature must be computed as per following instructions:\n\n    jws = base64URLEncode(JOSE Header)..alg(base64URLEncode(JOSE Header).base64URLEncode(Request Body))\n\n    [JOSE Header](https://tools.ietf.org/html/rfc7515#section-4) =\n\n    {\n      \"typ\": \"jose+json\",\n      \"kid\": \"JWK kid\",\n      \"alg\": \"[ES256(ECDSA using P-256 and SHA-256. Minimum keysize 256 bit) or RS256(RSASSA-PKCS1-v1_5usingSHA-256 Minimum key length 2048 bit)](https://tools.ietf.org/html/rfc7518#section-3.1)\",\n      \"https://payconiq.com/sub\" : \"{bankUserId}\",\n      \"https://payconiq.com/iss\" : \"Payconiq\",\n      \"https://payconiq.com/iat\" : \"{Current creation date time in [ISODateTime format](https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/dico/datatypes/_YW1tKtp-Ed-ak6NoX_4Aeg_-1624336183), expressed in UTC time format(YYYY-MM-DDThh:mm:ss.sssZ)},\n      \"https://payconiq.com/jti\" : \"{X-Request-ID}\",\n      \"https://payconiq.com/path\": \"request path eg. /bag/v1/payments/{payment-id}/authorization/{authorization-id}/confirm\"\n      \"crit\": [\"https://payconiq.com/sub\", \"https://payconiq.com/iss\", \"https://payconiq.com/iat\", \"https://payconiq.com/jti\", \"https://payconiq.com/path\"]\n    }\n\nJWS Payload MUST be the same as response body as base64url encoded JSON data."
+      schema:
+        type: string
+  responses:
+    403Forbidden:
+      description: 'Error codes:
+
+        * _ACCESS_DENIED_ - operation not allowed, caller doesn''t have required authorities'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        SignatureBank:
+          $ref: '#/components/headers/SignatureBank'
+    401Unauthorized:
+      description: 'If JWS signature is not valid. Error codes:
+
+        * _UNAUTHORIZED_ - caller doesn''t have valid authentication credentials'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        SignatureBank:
+          $ref: '#/components/headers/SignatureBank'
+    400InputError:
+      description: 'Error codes:
+
+        * _VALIDATION_ERROR_ - request validation failed'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        SignatureBank:
+          $ref: '#/components/headers/SignatureBank'
+    500InternalServerError:
+      description: 'Error codes:
+
+        * _TECHNICAL_ERROR_ - technical error'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        SignatureBank:
+          $ref: '#/components/headers/SignatureBank'
+    503ServiceUnavailable:
+      description: Service is unavailable
   schemas:
-    CreateRefundRequest:
+    RefundModel:
       type: object
-      description: request with refund details to create
+      description: refund details
       required:
+      - refundId
+      - paymentId
       - amount
       - currency
+      - status
+      - creationDate
       properties:
+        refundId:
+          $ref: '#/components/schemas/RefundId'
+        paymentId:
+          $ref: '#/components/schemas/PaymentId'
         amount:
           $ref: '#/components/schemas/Amount'
         currency:
           $ref: '#/components/schemas/Currency'
+        status:
+          $ref: '#/components/schemas/RefundStatus'
         description:
-          type: string
-          description: refund description
-    PaymentId:
+          $ref: '#/components/schemas/RefundDescription'
+        creationDate:
+          $ref: '#/components/schemas/RefundCreationDate'
+    RefundStatus:
       type: string
-      description: payment identifier
-      minLength: 24
-      maxLength: 24
+      enum:
+      - PENDING
+      - REFUNDED
+      - FAILED
+      description: '* _PENDING_ - refund request accepted by Bancontact Company, will be processed soon
+
+        * _REFUNDED_ - refund request successfully processed and money moved from merchant to debtor
+
+        * _FAILED_ - refund request processing failed for technical reasons, money movement didn''t happen'
     RefundCreationResponse:
       type: object
       description: refund creation response object
@@ -264,29 +286,11 @@ components:
       type: string
       format: date-time
       description: timestamp, when refund was created
-    RefundId:
+    PaymentId:
       type: string
-      description: refund identifier
+      description: payment identifier
       minLength: 24
       maxLength: 24
-    Amount:
-      type: integer
-      description: Amount in cents
-      format: int64
-      minimum: 1
-      exclusiveMinimum: 1
-      maximum: 999999999999
-    RefundStatus:
-      type: string
-      enum:
-      - PENDING
-      - REFUNDED
-      - FAILED
-      description: '* _PENDING_ - refund request accepted by Bancontact Company, will be processed soon
-
-        * _REFUNDED_ - refund request successfully processed and money moved from merchant to debtor
-
-        * _FAILED_ - refund request processing failed for technical reasons, money movement didn''t happen'
     ErrorResponse:
       type: object
       title: Error response
@@ -301,45 +305,41 @@ components:
       required:
       - code
       - message
-    RefundModel:
+    Amount:
+      type: integer
+      description: Amount in cents
+      format: int64
+      minimum: 1
+      exclusiveMinimum: 1
+      maximum: 999999999999
+    CreateRefundRequest:
       type: object
-      description: refund details
+      description: request with refund details to create
       required:
-      - refundId
-      - paymentId
       - amount
       - currency
-      - status
-      - creationDate
       properties:
-        refundId:
-          $ref: '#/components/schemas/RefundId'
-        paymentId:
-          $ref: '#/components/schemas/PaymentId'
         amount:
           $ref: '#/components/schemas/Amount'
         currency:
           $ref: '#/components/schemas/Currency'
-        status:
-          $ref: '#/components/schemas/RefundStatus'
         description:
-          $ref: '#/components/schemas/RefundDescription'
-        creationDate:
-          $ref: '#/components/schemas/RefundCreationDate'
+          type: string
+          description: refund description
     RefundDescription:
       type: string
       description: refund description
+    RefundId:
+      type: string
+      description: refund identifier
+      minLength: 24
+      maxLength: 24
     Currency:
       type: string
       enum:
       - EUR
       default: EUR
       description: currency code. Only EUR is supported [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217)
-  headers:
-    SignatureBank:
-      description: "[Detached JWS signature of response payload](https://tools.ietf.org/html/rfc7797).\nBancontact Company hosts the Public Key in [JWK format](https://tools.ietf.org/html/rfc7517) as [JWKS](https://tools.ietf.org/html/rfc7517#section-3) at:\n- https://jwks.bancontact.net/\n- https://jwks.preprod.bancontact.net/\nfor PROD and PREPROD environments respectively.\nThe Public Key should be downloaded from these URLs and identified by the 'kid' claim in the JOSE header.\nBancontact Company will use the same algorithm to sign the response as the one used for the request signature.\nThe signature must be computed as per following instructions:\n\n    jws = base64URLEncode(JOSE Header)..alg(base64URLEncode(JOSE Header).base64URLEncode(Request Body))\n\n    [JOSE Header](https://tools.ietf.org/html/rfc7515#section-4) =\n\n    {\n      \"typ\": \"jose+json\",\n      \"kid\": \"JWK kid\",\n      \"alg\": \"[ES256(ECDSA using P-256 and SHA-256. Minimum keysize 256 bit) or RS256(RSASSA-PKCS1-v1_5usingSHA-256 Minimum key length 2048 bit)](https://tools.ietf.org/html/rfc7518#section-3.1)\",\n      \"https://payconiq.com/sub\" : \"{bankUserId}\",\n      \"https://payconiq.com/iss\" : \"Payconiq\",\n      \"https://payconiq.com/iat\" : \"{Current creation date time in [ISODateTime format](https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/dico/datatypes/_YW1tKtp-Ed-ak6NoX_4Aeg_-1624336183), expressed in UTC time format(YYYY-MM-DDThh:mm:ss.sssZ)},\n      \"https://payconiq.com/jti\" : \"{X-Request-ID}\",\n      \"https://payconiq.com/path\": \"request path eg. /bag/v1/payments/{payment-id}/authorization/{authorization-id}/confirm\"\n      \"crit\": [\"https://payconiq.com/sub\", \"https://payconiq.com/iss\", \"https://payconiq.com/iat\", \"https://payconiq.com/jti\", \"https://payconiq.com/path\"]\n    }\n\nJWS Payload MUST be the same as response body as base64url encoded JSON data."
-      schema:
-        type: string
   securitySchemes:
     JWS-Request-Signature-Refund:
       name: Signature
