@@ -166,7 +166,8 @@ apis:
   description: The payoutList API from Bancontact — 1 operation(s) for payoutlist.
   humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
   baseURL: https://merchant.api.bancontact.net
-  tags:
+  tags: []
+  tags_raw:
   - payoutList
   properties:
   - type: OpenAPI
@@ -192,7 +193,8 @@ apis:
   description: The payoutPayments API from Bancontact — 1 operation(s) for payoutpayments.
   humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
   baseURL: https://merchant.api.bancontact.net
-  tags:
+  tags: []
+  tags_raw:
   - payoutPayments
   properties:
   - type: OpenAPI
@@ -218,7 +220,8 @@ apis:
   description: The payoutRefunds API from Bancontact — 1 operation(s) for payoutrefunds.
   humanURL: https://docs.bancontactpro.com/apis/merchant-payment.openapi
   baseURL: https://merchant.api.bancontact.net
-  tags:
+  tags: []
+  tags_raw:
   - payoutRefunds
   properties:
   - type: OpenAPI
