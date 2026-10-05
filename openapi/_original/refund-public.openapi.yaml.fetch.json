@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.bancontactpro.com/_bundle/apis/refund-public.openapi.yaml?download",
+ "requested_url": "https://docs.bancontactpro.com/_bundle/apis/refund-public.openapi.yaml?download",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 14094,
+ "sha256": "7a8f360b4e8a54f76175c4b5d495285bcd77ee792d718972811b16656899bd03",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

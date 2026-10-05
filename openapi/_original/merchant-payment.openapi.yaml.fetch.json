@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.bancontactpro.com/_bundle/apis/merchant-payment.openapi.yaml?download",
+ "requested_url": "https://docs.bancontactpro.com/_bundle/apis/merchant-payment.openapi.yaml?download",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 56083,
+ "sha256": "4093d799b771d3160c81e689eefbc56046ff49a756fe2ee20889f98117bbd36f",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

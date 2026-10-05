@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.bancontactpro.com/_bundle/apis/merchant-reconciliation.openapi.yaml?download",
+ "requested_url": "https://docs.bancontactpro.com/_bundle/apis/merchant-reconciliation.openapi.yaml?download",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 20207,
+ "sha256": "8124fa43e7e915bdf0de30071f5f3eeaa5de4627aef81ba4ba4795c64c0b945c",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
