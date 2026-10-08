@@ -76,3 +76,23 @@ scheme_fees:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units:
+  - object
+  - transaction
+  plans:
+  - name: Bancontact Pro
+    access: paid
+    model: hybrid
+    model_how: derived
+    units:
+    - object
+    - other
+    - transaction
+    periods:
+    - per-use
+    - year
