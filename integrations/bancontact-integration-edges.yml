@@ -1,0 +1,46 @@
+generated: '2026-10-12'
+method: searched
+source:
+- https://zapier.com/apps/bancontact/integrations
+- https://n8n.io/integrations/bancontact/
+- https://composio.dev/toolkits/bancontact
+- https://monid.ai/tools/bancontact
+checked:
+- https://composio.dev/toolkits/bancontact
+- https://monid.ai/tools/bancontact
+- https://n8n.io/integrations/bancontact/
+- https://zapier.com/apps/bancontact/integrations
+summary: null
+marketplace_apps: []
+edges:
+- partner_name: silverflow
+  partner: silverflow
+  partner_match: domain
+  type: contract
+  channel: partner-built
+  relationship: network
+  direction: partner-built
+  evidence: https://github.com/api-evangelist/silverflow/blob/main/openapi/silverflow-pos-charge-actions-api-openapi.yml
+  contract_reference:
+    repo: silverflow
+    spec_file: silverflow-pos-charge-actions-api-openapi.yml
+    value: bancontact
+    property: schemas.schemas-authorizationIsoFieldsBancontactWithDiscriminator.network
+    detected_by: detect-payment-method-edges.py
+    detected: '2026-10-12'
+- partner_name: stripe
+  partner: stripe
+  partner_match: domain
+  type: contract
+  channel: partner-built
+  relationship: processor-connection
+  direction: partner-built
+  evidence: https://github.com/api-evangelist/stripe/blob/main/openapi/stripe-sources-api-openapi.yml
+  contract_reference:
+    repo: stripe
+    spec_file: stripe-sources-api-openapi.yml
+    value: bancontact
+    property: schemas.source
+    detected_by: detect-payment-method-edges.py
+    detected: '2026-10-12'
+templates: []
