@@ -99,6 +99,13 @@ paths:
                 $ref: '#/components/schemas/error'
 components:
   schemas:
+    currency:
+      type: string
+      title: Currency
+      description: Currency code. Only EUR is supported [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217)
+      enum:
+      - EUR
+      default: EUR
     merchant-acknowledge:
       type: object
       title: MerchantAcknowledge
@@ -117,20 +124,6 @@ components:
       required:
       - currency
       - amount
-    payment_amount:
-      type: integer
-      format: int64
-      minimum: 1
-      exclusiveMinimum: 1
-      maximum: 999999999999
-      description: Amount in cents requested
-    currency:
-      type: string
-      title: Currency
-      description: Currency code. Only EUR is supported [ISO 4217](http://en.wikipedia.org/wiki/ISO_4217)
-      enum:
-      - EUR
-      default: EUR
     error:
       type: object
       description: error response received from server
@@ -153,6 +146,13 @@ components:
       - message
       - traceId
       - spanId
+    payment_amount:
+      type: integer
+      format: int64
+      minimum: 1
+      exclusiveMinimum: 1
+      maximum: 999999999999
+      description: Amount in cents requested
   securitySchemes:
     api_key_payment_profile:
       type: apiKey
