@@ -1,4 +1,4 @@
-# Bancontact (bancontact)
+# Bancontact
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,97 +64,159 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Bancontact is Belgium's most popular electronic payment system, operating through the Bancontact Payconiq Company (now transitioning to Bancontact Pro brand). The platform provides debit card payments, QR code payments, and mobile payments via the Payconiq by Bancontact app. The REST API enables merchants to accept payments online, in-app, and via QR codes with settlement in Belgian bank accounts.
+Bancontact Company nv/sa (formerly Bancontact Payconiq Company) operates Belgium's national debit card scheme and the Bancontact Pro merchant acceptance service (the rebranded Payconiq merchant platform). The Bancontact Pro developer portal publishes three OpenAPI 3.1 contracts on merchant.api.bancontact.net: the Payment V3 API (create, search, cancel and acknowledge QR/deeplink/checkout payments, with JWS-signed status callbacks), the Payment Refund Service API (idempotent refunds against SUCCEEDED payments) and the Merchant Reconciliation API (D+1 payouts, payments and refunds). Merchants authenticate with per-product API keys and ES256 detached JWS signatures verified against public JWKS endpoints, test end-to-end in a PREPROD environment with published test cards, and pay €0.06 per transaction plus €18 per year.
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/bancontact/refs/heads/main/apis.yml)
+**Areas:** Banking · Belgium · Debit Cards · E-Commerce · Fintech · Payments · QR Codes · Refunds · Reconciliation · Mobile Payments
 
-**Run:** [Capabilities Using Naftiko](https://github.com/naftiko/fleet?utm_source=api-evangelist&utm_medium=readme&utm_campaign=company-api-evangelist&utm_content=repo)
+## Bancontact on APIs.io
 
-## Tags:
+Everything profiled for Bancontact is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/bancontact/](https://apis.io/providers/bancontact/)** — or go straight to one of the APIs or properties below.
 
- - Banking, Belgium, Debit Cards, E-Commerce, Fintech, Payments
+### APIs (8)
 
-## Timestamps
+- [Bancontact Callback to Merchants API](https://apis.io/apis/bancontact/bancontact-callback-to-merchants-api/) — The Callback to Merchants API from Bancontact — 1 operation(s) for callback to merchants.
+- [Bancontact Merchant Acknowledge API](https://apis.io/apis/bancontact/bancontact-merchant-acknowledge-api/) — The Merchant Acknowledge API from Bancontact — 1 operation(s) for merchant acknowledge.
+- [Bancontact Merchant Endpoints API](https://apis.io/apis/bancontact/bancontact-merchant-endpoints-api/) — The Merchant Endpoints API from Bancontact — 4 operation(s) for merchant endpoints.
+- [Bancontact Payments API](https://apis.io/apis/bancontact/bancontact-payments-api/) — The Payments API from Bancontact — 2 operation(s) for payments.
+- [Bancontact Payout List API](https://apis.io/apis/bancontact/bancontact-payoutlist-api/) — The payoutList API from Bancontact — 1 operation(s) for payoutlist.
+- [Bancontact Payout Payments API](https://apis.io/apis/bancontact/bancontact-payoutpayments-api/) — The payoutPayments API from Bancontact — 1 operation(s) for payoutpayments.
+- [Bancontact Payout Refunds API](https://apis.io/apis/bancontact/bancontact-payoutrefunds-api/) — The payoutRefunds API from Bancontact — 1 operation(s) for payoutrefunds.
+- [Bancontact Refunds API](https://apis.io/apis/bancontact/bancontact-refunds-api/) — The Refunds API from Bancontact — 1 operation(s) for refunds.
 
-- **Created:** 2025-01-01
-- **Modified:** 2026-04-21
+### Published properties
 
-## APIs
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-### Bancontact Payconiq Acceptance API
-REST API for accepting Bancontact payments online and via QR code. Enables merchants to create payment transactions, generate QR codes, handle callbacks, and process refunds. Transitioning to Bancontact Pro branding in 2026.
+#### AsyncAPI (1)
 
-**Human URL:** [https://docs.bancontactpro.com/](https://docs.bancontactpro.com/)
+Event-driven and webhook contracts.
 
-#### Tags:
+- [Bancontact Callbacks Webhooks](https://apis.io/asyncapis/bancontact/bancontact-callbacks-webhooks/)
 
- - Checkout, Payments, QR Code, Transactions, Refunds
+#### MCP servers (1)
 
-#### Properties
+Model Context Protocol servers that expose the API to agents.
 
-- [Documentation](https://docs.bancontactpro.com/)
-- [Legacy Payconiq Documentation](https://docs.payconiq.be/)
+- [bancontact-pro](https://apis.io/servers/bancontact/bancontact-pro/)
 
-## Common Properties
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Bancontact Context](https://apis.io/jsonld/bancontact/bancontact-context/)
+
+#### Vocabulary (1)
+
+The provider's domain terms, defined.
+
+- [Bancontact Vocabulary](https://apis.io/vocabularies/bancontact/bancontact-vocabulary/)
+
+#### Overlays (3)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Bancontact Merchant Reconciliation Api Overlay](https://apis.io/overlays/bancontact/bancontact-merchant-reconciliation-api-overlay/)
+- [Bancontact Payment Refund Service Api Overlay](https://apis.io/overlays/bancontact/bancontact-payment-refund-service-api-overlay/)
+- [Bancontact Payment V3 Api Overlay](https://apis.io/overlays/bancontact/bancontact-payment-v3-api-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [Bancontact API Rules](https://apis.io/rules/bancontact/bancontact-spectral-rules/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Bancontact Authentication](https://apis.io/security/bancontact/bancontact-authentication/)
+- [Bancontact Domain Security](https://apis.io/security/bancontact/bancontact-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Bancontact Plans Pricing](https://apis.io/plans/bancontact/bancontact-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Bancontact Rate Limits](https://apis.io/rate-limits/bancontact/bancontact-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Bancontact Finops](https://apis.io/finops/bancontact/bancontact-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.bancontact.com/)
-- [Bancontact Pro Developer Portal](https://docs.bancontactpro.com/)
+- [Documentation](https://docs.bancontactpro.com/)
+- [Getting started](https://docs.bancontactpro.com/guides/general/gettingstarted052025v4)
+- [API reference](https://docs.bancontactpro.com/apis/merchant-payment.openapi)
+- [Pricing](https://www.bancontact.com/en/professional/our-solutions/integrated-solution)
+- [Sign up](https://www.bancontact.com/en/professional/start/integrated-solution)
+- [Support](https://www.bancontact.com/en/professional/contact)
+- [Blog](https://www.bancontact.com/en/news)
+- [Compliance](https://www.bancontact.com/en/professional/legal-and-administrative-specifications)
+- [Terms of service](https://www.bancontact.com/en/privacy-statement-and-terms-conditions)
+- [Privacy policy](https://www.bancontact.com/en/privacy-statement-and-terms-conditions)
 
-## Features
+## API Evangelist rating
 
-| Name | Description |
-|------|-------------|
-| Online Payments | Accept Bancontact debit card payments in e-commerce checkouts. |
-| QR Code Payments | Generate QR codes for in-store and contactless payment acceptance. |
-| Mobile App Payments | Payconiq by Bancontact app integration for mobile checkout. |
-| Webhooks | Real-time payment status notifications via webhook callbacks. |
-| Refunds | Programmatic refund processing for completed transactions. |
-| Multi-currency | EUR-denominated payments with Belgian bank account settlement. |
-| Deep Links | Mobile deep links to open the Payconiq app directly from merchant checkout. |
+**Kin Score 60.9** — strong · rubric 0.25.0 · scored 2026-10-23
 
-## Use Cases
+| Facet | Score |
+|---|---|
+| Discoverability | 78.6 |
+| Contract quality | 62.4 |
+| Contract governance | 41.7 |
+| Operational transparency | 31.6 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 73.7 |
 
-| Name | Description |
-|------|-------------|
-| E-Commerce Checkout | Accept Bancontact as a local Belgian payment method at checkout. |
-| QR Code POS | In-store and restaurant QR code payment acceptance. |
-| Mobile In-App Payments | Integrate Bancontact into iOS and Android apps. |
-| Invoice Payments | Payment links and QR codes for invoicing and B2C collections. |
-| Subscription Billing | Recurring payment collection from Belgian consumers. |
+**Agent readiness 50.8** — agent-native
 
-## Integrations
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | — |
+| Auth Clarity | served (partial credit) |
+| Idempotency | verified |
+| Error Semantics | verified |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
 
-| Name | Description |
-|------|-------------|
-| Adyen | Accept Bancontact via Adyen payment gateway. |
-| Computop | Accept Bancontact via Computop payment platform. |
-| PPRO | Access Bancontact via PPRO's local payment method network. |
-| Stripe | Accept Bancontact via Stripe payment infrastructure. |
-| Mollie | Accept Bancontact via Mollie payment service. |
-| MultiSafepay | Accept Bancontact via MultiSafepay payment gateway. |
+**Regulatory alignment 26.8** — Payments
 
-## Artifacts
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/bancontact/](https://apis.io/providers/bancontact/).
 
-Machine-readable API specifications organized by format.
+## How this profile is made
 
-### JSON-LD
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
 
-- [Bancontact JSON-LD Context](json-ld/bancontact-context.jsonld)
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Bancontact: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
 
-## Capabilities
+## Open an issue
 
-- [Bancontact Payment Capability](capabilities/bancontact-payment-capability.yaml) — Online checkout, QR code payment, and refund processing workflows
-
-## Vocabulary
-
-- [Bancontact Vocabulary](vocabulary/bancontact-vocabulary.yaml) — Taxonomy covering 5 resources, 6 actions, 3 workflows, and 3 personas for Belgian payment services
-
-## Rules
-
-- [Bancontact Spectral Rules](rules/bancontact-spectral-rules.yml) — 12 rules across 5 categories enforcing Bancontact API conventions
-
-## Maintainers
-
-**FN:** Kin Lane
-
-**Email:** kin@apievangelist.com
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/bancontact/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
