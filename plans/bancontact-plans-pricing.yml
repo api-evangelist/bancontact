@@ -1,0 +1,68 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://www.bancontact.com/en/professional/our-solutions/integrated-solution
+sources:
+- https://www.bancontact.com/en/professional/our-solutions/integrated-solution
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T141238
+  grounding: every price_text was found verbatim in the fetched page text
+audience: business-product
+pricing_basis: per-call
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-28'
+published: true
+note: Prices exclude VAT per page footnote.
+plan_count: 3
+currency: EUR
+plans:
+- name: Bancontact Pro integrated solution - per transaction
+  price_text: €0.06 * per transaction
+  price: 0.06
+  currency: EUR
+  period: per-use
+  unit: transaction
+- name: Annual account fee
+  price_text: €18 * annual fee per account, however many solutions you use
+  price: 18
+  currency: EUR
+  period: year
+  unit: account
+- name: Activation
+  price_text: No extra activation fees
+  period: one-time
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units:
+  - object
+  - transaction
+  plans:
+  - name: Bancontact Pro integrated solution - per transaction
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - transaction
+    periods:
+    - other
+  - name: Annual account fee
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - object
+    periods:
+    - year
+  - name: Activation
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - one-time
